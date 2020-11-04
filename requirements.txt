@@ -1,0 +1,17 @@
+# Requirements to run the code
+py-pde==0.12.1
+h5py==3.0.0
+pandas==1.1.4
+tqdm==4.51.0
+ffmpeg==1.4
+
+# Jupyter Notebooks
+jupyter==1.0.0
+notebook==6.1.4
+jupytext==1.6.0
+
+# Plotting
+matplotlib==3.3.2
+
+# Auxiliary
+invoke==1.4.1
