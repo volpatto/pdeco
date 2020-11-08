@@ -42,7 +42,7 @@
 # +
 from pde import (PDE, FieldCollection, PlotTracker, ScalarField, UnitGrid, 
                  CartesianGrid, MemoryStorage)
-from pde import ExplicitSolver, ImplicitSolver, Controller
+from pde import ExplicitSolver, ImplicitSolver, Controller, ScipySolver
 
 # Species diffusivity coefficients (please be careful with this values)
 Du = 1e-6
@@ -99,8 +99,13 @@ trackers = [
 ]
 
 # Setup explicit solver
-explicit_solver = ExplicitSolver(eq)
-controller = Controller(explicit_solver, t_range=[0, 100], tracker=trackers)
+# explicit_solver = ExplicitSolver(eq)
+# controller = Controller(explicit_solver, t_range=[0, 100], tracker=trackers)
+# solve = controller.run(state, dt=1e-2)
+
+# Setup scipy solver
+scipy_solver = ScipySolver(eq, method='LSODA')
+controller = Controller(scipy_solver, t_range=[0, 100], tracker=trackers)
 solve = controller.run(state, dt=1e-2)
 
 # +
@@ -182,14 +187,19 @@ trackers = [
 ]
 
 # Setup explicit solver
-explicit_solver = ExplicitSolver(eq)
-controller = Controller(explicit_solver, t_range=[0, 300], tracker=trackers)
-solve = controller.run(state, dt=1e-2)
+# explicit_solver = ExplicitSolver(eq)
+# controller = Controller(explicit_solver, t_range=[0, 300], tracker=trackers)
+# solve = controller.run(state, dt=1e-2)
 
 # Setup implicit solver (if explicit does not work, try this one)
 # implicit_solver = ImplicitSolver(eq)
 # controller = Controller(implicit_solver, t_range=[0, 50], tracker=trackers)
 # solve = controller.run(state)
+
+# Setup scipy solver
+scipy_solver = ScipySolver(eq, method='LSODA')
+controller = Controller(scipy_solver, t_range=[0, 100], tracker=trackers)
+solve = controller.run(state, dt=1e-2)
 
 # print(controller.diagnostics)  # to debug
 
