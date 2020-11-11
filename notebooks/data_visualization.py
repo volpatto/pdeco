@@ -15,11 +15,13 @@
 
 import pandas as pd
 import matplotlib.pyplot as plt
+import xlrd
 
 # Loading the data:
 
 # +
-full_data = pd.read_csv("../data/aphid_ladybeetle.csv")
+# full_data = pd.read_csv("../data/aphid_ladybeetle.csv")
+full_data = pd.read_excel("../data/aphid_ladybeetle.xls")
 
 full_data
 # -

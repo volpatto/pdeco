@@ -5,6 +5,10 @@ pandas==1.1.4
 tqdm==4.51.0
 ffmpeg==1.4
 
+# Excel IO with pandas
+xlrd==1.2.0
+openpyxl
+
 # Jupyter Notebooks
 jupyter==1.0.0
 notebook==6.1.4
