@@ -1,5 +1,4 @@
 # PDECO: Study of population dynamics with PDEs for Ecology problems
----------------------------------------------------------------------
 
 **READ HERE: This is an early stage research and it should not be considered for reproduction, replication and to draw conclusions.**
 
