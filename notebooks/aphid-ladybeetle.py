@@ -259,11 +259,11 @@ tracker_plot_config = PlotTracker(show=True, plot_args={
     }
 )
 storage = MemoryStorage()
-dt = 1e-5
+dt = 1e-2
 trackers = [
     "progress",  # show progress bar during simulation
     "steady_state",  # abort if steady state is reached
-    storage.tracker(interval=1),  # store data every simulation time unit
+    storage.tracker(interval=0.25),  # store data every simulation time unit
     tracker_plot_config,  # show images during simulation
 ]
 
@@ -295,46 +295,62 @@ x_points
 
 # ### Comparing simulation with measurements
 
+# +
+# time_labels_dict = {
+#     0: 0,
+#     1: 2,
+#     2: 3
+# }
+
 time_labels_dict = {
     0: 0,
-    1: 2,
-    2: 3
+    1: 1,
+    4: 2,
+    8: 3
 }
+
+# +
+time_indices_to_plot = list(time_labels_dict.keys())
+
+time_indices_to_plot
+# -
 
 # #### Aphids
 
 for time_index, aphid_simulation in enumerate(u_storage.data):
-    plt.figure(figsize=(8, 6))
-    plt.ylim([0, 650])
-    
-    idx_for_observed = time_labels_dict[time_index]  # we skip time 1/4
-    aphid_observed = aphid_data[aphid_data.time == idx_for_observed].copy()
-    plt.plot(aphid_observed.x.values, aphid_observed.density.values, 'o', label='Observed')
-    plt.plot(x_points, aphid_simulation, '-', label='Simulated')
-    
-    plt.xlabel('x')
-    plt.ylabel('Population density')
-    plt.title(f'Aphid at time {time_index}')
-    
-    plt.grid(True)
-    plt.legend(shadow=True)
-    plt.show()
+    if time_index in time_indices_to_plot:
+        plt.figure(figsize=(8, 6))
+        plt.ylim([0, 650])
+
+        idx_for_observed = time_labels_dict[time_index]  # we skip time 1/4
+        aphid_observed = aphid_data[aphid_data.time == idx_for_observed].copy()
+        plt.plot(aphid_observed.x.values, aphid_observed.density.values, 'o', label='Observed')
+        plt.plot(x_points, aphid_simulation, '-', label='Simulated')
+
+        plt.xlabel('x')
+        plt.ylabel('Population density')
+        plt.title(f'Aphid at time {idx_for_observed}')
+
+        plt.grid(True)
+        plt.legend(shadow=True)
+        plt.show()
 
 # #### Ladybird beetles
 
 for time_index, ladybeetle_simulation in enumerate(v_storage.data):
-    plt.figure(figsize=(8, 6))
-    plt.ylim([0, 13])
-    
-    idx_for_observed = time_labels_dict[time_index]  # we skip time 1/4
-    ladybeetle_observed = ladybeetle_data[ladybeetle_data.time == idx_for_observed].copy()
-    plt.plot(ladybeetle_observed.x.values, ladybeetle_observed.density.values, 'o', label='Observed')
-    plt.plot(x_points, ladybeetle_simulation, '-', label='Simulated')
-    
-    plt.xlabel('x')
-    plt.ylabel('Population density')
-    plt.title(f'Ladybird beetle at time {time_index}')
-    
-    plt.grid(True)
-    plt.legend(shadow=True)
-    plt.show()
+    if time_index in time_indices_to_plot:
+        plt.figure(figsize=(8, 6))
+        plt.ylim([0, 13])
+
+        idx_for_observed = time_labels_dict[time_index]  # we skip time 1/4
+        ladybeetle_observed = ladybeetle_data[ladybeetle_data.time == idx_for_observed].copy()
+        plt.plot(ladybeetle_observed.x.values, ladybeetle_observed.density.values, 'o', label='Observed')
+        plt.plot(x_points, ladybeetle_simulation, '-', label='Simulated')
+
+        plt.xlabel('x')
+        plt.ylabel('Population density')
+        plt.title(f'Ladybird beetle at time {idx_for_observed}')
+
+        plt.grid(True)
+        plt.legend(shadow=True)
+        plt.show()
