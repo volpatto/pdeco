@@ -4,6 +4,7 @@ h5py==3.0.0
 pandas==1.1.4
 tqdm==4.51.0
 ffmpeg==1.4
+SALib
 
 # Excel IO with pandas
 xlrd==1.2.0
