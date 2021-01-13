@@ -113,6 +113,24 @@ u_storage = storage.extract_field(0)
 v_storage = storage.extract_field(1)
 
 u_storage.data
+# -
+
+import numpy as np
+t_recorded = storage.times  # retrieve all recorded simulation times
+x_idx = 30
+u_storage_array = np.array(u_storage.data)  # convert list of arrays to a 2D array (to use 2D index)
+u_at_given_x = u_storage_array[:, x_idx]  # [t_idx, x_idx], retrieve all times (:) for a given x_idx
+u_at_given_x
+
+# +
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(8, 6))
+plt.plot(t_recorded, u_at_given_x, "-x")
+plt.xlabel("Time")
+plt.ylabel(fr"$u$ at x = {u_storage.grid.axes_coords[0][x_idx]}")
+plt.grid()
+plt.show()
 
 # +
 from pde.visualization import movie
