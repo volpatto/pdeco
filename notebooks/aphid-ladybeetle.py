@@ -24,8 +24,8 @@
 # +
 import pandas as pd
 
-aphid_data = pd.read_csv('../data/aphid.csv')
-ladybeetle_data = pd.read_csv('../data/ladybeetle.csv')
+aphid_data = pd.read_csv('../data/simple/aphid.csv')
+ladybeetle_data = pd.read_csv('../data/simple/ladybeetle.csv')
 # -
 
 aphid_data

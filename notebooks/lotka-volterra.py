@@ -131,11 +131,6 @@ plt.xlabel("Time")
 plt.ylabel(fr"$u$ at x = {u_storage.grid.axes_coords[0][x_idx]}")
 plt.grid()
 plt.show()
-
-# +
-from pde.visualization import movie
-
-movie(v_storage, "v_field.mp4")
 # -
 
 # ## 2D case

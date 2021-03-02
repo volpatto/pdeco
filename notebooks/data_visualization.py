@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt
 # Loading the raw data:
 
 # +
-full_data = pd.read_excel("../data/aphid_ladybeetle_raw.xls")
+full_data = pd.read_excel("../data/simple/aphid_ladybeetle_raw.xls")
 
 full_data
 # -
@@ -75,8 +75,8 @@ ladybeetle_data
 
 # Now everything looks OK. Now let's write our new data to use in the simulations.
 
-aphid_data.to_csv("../data/aphid.csv", index=False)
-ladybeetle_data.to_csv("../data/ladybeetle.csv", index=False)
+aphid_data.to_csv("../data/simple/aphid.csv", index=False)
+ladybeetle_data.to_csv("../data/simple/ladybeetle.csv", index=False)
 
 # ## Data visualization
 
