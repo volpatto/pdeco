@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding="UTF-8" ?><kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <Style id="custom-style">
+      <BalloonStyle>
+        <bgColor>ffcbe9e8</bgColor>
+        <textColor>ff000000</textColor>
+      </BalloonStyle>
+      <LineStyle>
+        <color>ff00ffff</color>
+        <colorMode>normal</colorMode>
+        <width>2</width>
+      </LineStyle>
+      <IconStyle>
+        <color>ff0000ee</color>
+        <colorMode>normal</colorMode>
+        <scale>0.6</scale>
+      </IconStyle>
+      <PolyStyle>
+        <color>7f00ffff</color>
+        <colorMode>normal</colorMode>
+        <fill>1</fill>
+        <outline>1</outline>
+      </PolyStyle>
+    </Style>
+    
+    <Placemark><name>Sapelo</name><description>&lt;div style=&quot;width:300px;border:0;background-color:#e8e9cb;font-family:Verdana,Arial,sans-serif;font-size:12px;text-align:left;padding:8px 20px 8px 8px;&quot;&gt;
+                      &lt;p&gt;&lt;a href=&quot;http://gce-lter.marsci.uga.edu/&quot;&gt;&lt;img src=&quot;http://gce-lter.marsci.uga.edu/public/resources/logos/GCELTER_transparent_banner.gif&quot; width=&quot;300&quot; style=&quot;border:none&quot;/&gt;&lt;/a&gt;&lt;/p&gt; 
+                      &lt;p style=&quot;margin:1em 0 0 0&quot;&gt;&lt;strong style=&quot;color:#336600&quot;&gt;Site Code:&lt;/strong&gt; Sapelo&lt;/p&gt; 
+                      &lt;p style=&quot;margin:1em 0 0 0&quot;&gt;&lt;strong style=&quot;color:#336600&quot;&gt;Site Name:&lt;/strong&gt; Sapelo Island&lt;/p&gt; 
+                      &lt;p style=&quot;margin:1em 0 0 0&quot;&gt;&lt;strong style=&quot;color:#336600&quot;&gt;Size:&lt;/strong&gt; 10030.9 hectares&lt;/p&gt; 
+                      &lt;p style=&quot;margin:1em 0 0 0&quot;&gt;&lt;strong style=&quot;color:#336600&quot;&gt;Site Description:&lt;/strong&gt;&lt;br/&gt;Sapelo Island on the Southeast Georgia Coast&lt;/p&gt; 
+                      &lt;p style=&quot;margin:1em 0 1em 0; text-align:center&quot;&gt;Click &lt;a href=&quot;http://gce-lter.marsci.uga.edu/public/app/sitedetails.asp?site=Sapelo&quot;&gt;here&lt;/a&gt; for more information&lt;/p&gt;&lt;/div&gt;</description><styleUrl>#custom-style</styleUrl><Polygon id="Sapelo"><extrude>0</extrude><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><outerBoundaryIs><LinearRing><coordinates>-81.268699,31.382974-81.266109,31.385677-81.263087,31.390468-81.260642,31.395135-81.259634,31.400294-81.257045,31.407172-81.252584,31.413559-81.250570,31.420041-81.249419,31.421759-81.241721,31.428855-81.233592,31.435506-81.232441,31.439598-81.232441,31.446553-81.231578,31.448025-81.228988,31.448025-81.226542,31.449253-81.222945,31.454040-81.218845,31.458870-81.213809,31.463963-81.209277,31.468645-81.204385,31.474169-81.200212,31.481042-81.197335,31.487056-81.194170,31.493929-81.191436,31.500307-81.187839,31.506317-81.184817,31.510610-81.181364,31.514045-81.176185,31.517111-81.178199,31.521773-81.182228,31.526924-81.187839,31.532076-81.192299,31.535143-81.198918,31.536369-81.201939,31.535511-81.205968,31.532199-81.208845,31.530897-81.211579,31.529132-81.212946,31.528009-81.214456,31.524839-81.218053,31.521895-81.219061,31.523122-81.216615,31.525207-81.219492,31.527415-81.225103,31.527047-81.230139,31.526556-81.230571,31.527783-81.234599,31.529991-81.237621,31.527906-81.240067,31.525459-81.242081,31.521165-81.244959,31.516503-81.246973,31.512209-81.249563,31.508283-81.251002,31.507056-81.252009,31.505338-81.254167,31.503498-81.255030,31.501412-81.256613,31.501044-81.260642,31.496260-81.263087,31.496260-81.264095,31.495033-81.267692,31.496628-81.275749,31.494542-81.280209,31.491966-81.284813,31.489880-81.288266,31.489021-81.290856,31.488040-81.293878,31.488040-81.295316,31.485954-81.295316,31.485095-81.293158,31.483115-81.291432,31.481664-81.291432,31.480354-81.292295,31.479823-81.296467,31.474791-81.297906,31.473073-81.299345,31.467428-81.298194,31.464649-81.297331,31.461905-81.298913,31.459696-81.304381,31.457119-81.305388,31.455892-81.303517,31.454051-81.302510,31.452455-81.302942,31.448528-81.303517,31.443374-81.302942,31.441287-81.302942,31.439078-81.304956,31.433924-81.307042,31.430835-81.307546,31.427910-81.307978,31.424474-81.307258,31.421650-81.304668,31.418212-81.302222,31.416493-81.302654,31.415266-81.300064,31.410846-81.297618,31.406548-81.296611,31.405321-81.294165,31.403602-81.292583,31.401883-81.289993,31.398814-81.287547,31.395376-81.287547,31.392429-81.286540,31.391079-81.285964,31.389360-81.283087,31.388132-81.281504,31.387273-81.281504,31.385554-81.281792,31.383466-81.281792,31.382238-81.281648,31.380887-81.278770,31.380150-81.275173,31.380518-81.272727,31.380518-81.270138,31.381378-81.268699,31.382974-81.268699,31.382974</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+    
+  </Document>
+</kml>

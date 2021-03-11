@@ -1,0 +1,8 @@
+Manifest file for knb-lter-gce.583.22-4c9184f37cff01bcdc32dc486ec36961.zip created on Mon Dec 07 15:21:25 MST 2020
+INS-GCET-1608_Iva_2013_1_1.CSV (20600 bytes)
+INS-GCET-1608_Iva_2014_1_1.CSV (49069 bytes)
+INS-GCET-1608_Structure_1_1.CSV (4975 bytes)
+INS-GCET-1608.kml (4945 bytes)
+knb-lter-gce.583.22.xml (130058 bytes)
+knb-lter-gce.583.22.txt (25256 bytes)
+knb-lter-gce.583.22.report.xml (47609 bytes)

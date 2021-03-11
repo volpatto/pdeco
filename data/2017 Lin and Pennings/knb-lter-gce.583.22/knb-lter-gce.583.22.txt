@@ -1,0 +1,856 @@
+Dataset title:  Visual survey of insect communities on Iva frutescens in summer 2013 and 2014 on Sapelo Island, Georgia
+
+Dataset ID:  INS-GCET-1608.1.1
+Dataset Creator
+
+	Organization:	Georgia Coastal Ecosystems LTER Project
+	
+	Address:
+			Dept. of Marine Sciences
+			University of Georgia
+			Athens, Georgia 30602-3636  USA
+	
+	Email:		gcelter@uga.edu
+	URL:		http://gce-lter.marsci.uga.edu/
+
+	Name:		Wei-Ting Lin
+	Organization:	University of Houston
+	
+	Address:
+			Department of Biology and Chemistry
+			University of Houston
+			Houston, Texas 77204-5513  USA
+	
+	Email:		weiting.lin.lin@gmail.com
+
+
+Metadata Provider
+
+
+
+Dataset Abstract
+
+	Visual surveys were conducted in summer 2013 and 2014 to record the insect fauna that occurred on patches of Iva frutescens. Forty-four patches of Iva frutescens at three locations on Sapelo Island, Georgia, were marked for repetitive surveys. Thirty-eight of these patches were sampled in 2014. The patches were visually surveyed every three days from May 29 - June 15, 2013, and from June 1 - July 29, 2014, and the taxon and abundance of insects were recorded. This submission contains three data tables: 1. Insect fauna of Iva patches in 2013. This data set includes observations of 44 patches on 6 sampling dates, and includes Armases crab data. 2. Insect fauna of Iva patches in 2014. This data set includes observations of 38 patches on 20 sampling dates. 3. Structure of Iva patches on Sapelo Island in 2013. This data set contains the dimensions (Length, Width, Height) and surrounding environments of the Iva patches that were surveyed in 2013. The GPS locations of the patches were measured in 2014.
+
+
+Dataset Keywords
+
+	Georgia
+	Sapelo Island
+	USA
+	aphids
+	GCE
+	Georgia Coastal Ecosystems
+	ladybugs
+	LTER
+	metacommunities
+	patches
+	Acrididae
+	Acrididea
+	Acridoidea
+	Angiospermae
+	Animalia
+	Armases cinereum
+	Arthropoda
+	Asteraceae
+	Asterales
+	Asteranae
+	Bilateria
+	Brachyura
+	Caelifera
+	Chrysomelidae
+	Chrysomeloidea
+	Coleoptera
+	Crustacea
+	Cucujiformia
+	Decapoda
+	Ecdysozoa
+	Eucarida
+	Eumalacostraca
+	Eumolpinae
+	Gomphocerinae
+	Grapsoidea
+	Hesperotettix floridensis
+	Hexapoda
+	Holometabola
+	Insecta
+	Iva frutescens
+	Magnoliopsida
+	Malacostraca
+	Melanoplinae
+	Neoptera
+	Orphulella pelidna
+	Orthoptera
+	Paria aterrima
+	Plantae
+	Pleocyemata
+	Polyneoptera
+	Polyphaga
+	Protostomia
+	Pterygota
+	Sesarmidae
+	Spermatophytina
+	Streptophyta
+	Tracheophyta
+	Typophorini
+	Viridaeplantae
+	abundance
+	communities
+	insects
+	marshes
+	population dynamics
+	species diversity
+
+
+Intellectual Rights
+
+	All publications based on this data set must cite the contributor and Georgia Coastal Ecosystems LTER project, and two copies of the manuscript must be submitted to the GCE-LTER Information Management Office.
+
+
+Distribution
+
+	Online distribution:  http://gce-lter.marsci.uga.edu/public/app/dataset_details.asp?accession=INS-GCET-1608
+
+
+Geographic Coverage
+
+
+	Bounding Coordinates
+
+		Geographic description:	Overall bounding box describing the geographic region within the Georgia Coastal Ecosystems LTER study domain represented in data set INS-GCET-1608, based on the maximum geographic extents of all site polygons referenced in the data set
+		West bounding coordinate:	-81.307978
+		East bounding coordinate:	-81.176185
+		North bounding coordinate:	31.536369
+		South bounding coordinate:	31.380150
+	
+
+
+
+Temporal Coverage
+
+	Start Date:  2013-05-29
+	End Date:  2014-07-29
+
+
+Dataset Contact
+
+	Position:	Information Manager
+	Organization:	LTER Network Office
+	
+	Address:
+			UNM Biology Department, MSC03-2020
+			1 University of New Mexico
+			Albuquerque, NM 87131-0001  USA
+	
+	Phone:		505 277-2535
+	Fax:		505 277-2541
+	Email:		tech-support@lternet.edu
+	URL:		http://www.lternet.edu
+
+
+Methods
+
+	Sampling Description 
+
+
+
+	Method Step 
+
+		Description 
+
+
+
+	Method Step 
+
+		Description 
+
+
+
+Data Table
+
+	Entity Name:  INS-GCET-1608_Iva_2013
+	Entity Description:  Insect fauna of Iva patches in 2013
+	Object Name:  INS-GCET-1608_Iva_2013_1_1.CSV
+
+
+
+Data Format
+
+	Number of Header Lines:  5
+	Attribute Orientation:  column
+	Field Delimiter:  ,
+	Number of Records:  264
+
+
+
+Attributes
+
+	Attribute Name:  Location
+	Attribute Label:  
+	Attribute Definition:  Location of the patch sampled. 
+	Storage Type:  string
+	Measurement Scale: 
+		Location of the patch sampled. 
+	Missing Value Code: 
+
+
+	Attribute Name:  Date
+	Attribute Label:  
+	Attribute Definition:  Date the sample was taken.
+	Storage Type:  dateTime
+	Measurement Scale: 
+	Missing Value Code: 
+
+
+	Attribute Name:  Location_code
+	Attribute Label:  
+	Attribute Definition:  numeric code for variable "Location". 
+	Storage Type:  integer
+	Measurement Scale: 
+		1=  dike
+		2= airport
+		3= lighthouse
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Patch_ID
+	Attribute Label:  
+	Attribute Definition:  ID of patch within each location
+	Storage Type:  integer
+	Measurement Scale: 
+		ID of patch within each location
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Part_Sampled
+	Attribute Label:  
+	Attribute Definition:  fraction of the patch that was sampled
+	Storage Type:  float
+	Measurement Scale: 
+		Units:  dimensionless
+		Precision:  0.01
+		Number Type:  real
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Time_CrabSample
+	Attribute Label:  
+	Attribute Definition:  time of day when the crabs (Armases) were sampled. (Not recorded in 2014)
+	Storage Type:  dateTime
+	Measurement Scale: 
+	Missing Value Code: 
+
+
+	Attribute Name:  Armases
+	Attribute Label:  
+	Attribute Definition:  number of crab (Armases cinereum) found.  (Not recorded in 2014)
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Time_InsectSample
+	Attribute Label:  
+	Attribute Definition:  time of day when the insects were sampled. (Not recorded in 2014)
+	Storage Type:  dateTime
+	Measurement Scale: 
+	Missing Value Code: 
+
+
+	Attribute Name:  Spider
+	Attribute Label:  
+	Attribute Definition:  number of spiders (any species) found 
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Ant
+	Attribute Label:  
+	Attribute Definition:  number of ants (any species) found
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Ophraella
+	Attribute Label:  
+	Attribute Definition:  number of leaf beetles (Orphulella pelidna) found
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Paria
+	Attribute Label:  
+	Attribute Definition:  number of leaf beetles (Paria aterrima) found
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Uroleucon
+	Attribute Label:  
+	Attribute Definition:  number of aphids (Uroleucon ambrosiae) found
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Hesperotettix
+	Attribute Label:  
+	Attribute Definition:  number of grasshopper (Hesperotettix floridensis) found
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Other_Grasshopper
+	Attribute Label:  
+	Attribute Definition:  number of grasshopper other than Hesperotettix found
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Other_Planthoppers
+	Attribute Label:  
+	Attribute Definition:  number of planthoppers found
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Micrutalis
+	Attribute Label:  
+	Attribute Definition:  number of treehoppers (Micrutalis calva) found
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Cryptolaemus
+	Attribute Label:  
+	Attribute Definition:  number of small beetles (Cryptolaemus sp.) found. Species not identified
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Coccinella_septempunctata
+	Attribute Label:  
+	Attribute Definition:  number of 7-spot ladybugs (Coccinella septempunctata) found
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Cycloneda_sanguinea
+	Attribute Label:  
+	Attribute Definition:  number of spotless ladybug (Cycloneda sanguinea) found
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Naemia
+	Attribute Label:  
+	Attribute Definition:  number of ladybugs (Naemia sp.) found. Species not identified
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Psyllobora
+	Attribute Label:  
+	Attribute Definition:  number of fungus-eating ladybugs (Psyllobora  sp.) species not identified
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Ladybug_Pupa
+	Attribute Label:  
+	Attribute Definition:  Number of ladybug pupa found. Species not identified
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Ladybug_Larvae
+	Attribute Label:  
+	Attribute Definition:  Number of ladybug larvae found. Species not identified
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Location
+	Attribute Label:  
+	Attribute Definition:  Location of the patch sampled. 
+	Storage Type:  string
+	Measurement Scale: 
+		Location of the patch sampled. 
+	Missing Value Code: 
+
+
+	Attribute Name:  Date
+	Attribute Label:  
+	Attribute Definition:  Date the sample was taken.
+	Storage Type:  dateTime
+	Measurement Scale: 
+	Missing Value Code: 
+
+
+	Attribute Name:  Location_code
+	Attribute Label:  
+	Attribute Definition:  numeric code for variable "Location". 
+	Storage Type:  integer
+	Measurement Scale: 
+		1=  dike
+		2= airport
+		3= lighthouse
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Patch_ID
+	Attribute Label:  
+	Attribute Definition:  ID of patch within each location
+	Storage Type:  integer
+	Measurement Scale: 
+		ID of patch within each location
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Part_Sampled
+	Attribute Label:  
+	Attribute Definition:  fraction of the patch that was sampled
+	Storage Type:  float
+	Measurement Scale: 
+		Units:  dimensionless
+		Precision:  0.01
+		Number Type:  real
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Time_CrabSample
+	Attribute Label:  
+	Attribute Definition:  time of day when the crabs (Armases) were sampled. (Not recorded in 2014)
+	Storage Type:  dateTime
+	Measurement Scale: 
+	Missing Value Code: 
+
+
+	Attribute Name:  Armases
+	Attribute Label:  
+	Attribute Definition:  number of crab (Armases cinereum) found.  (Not recorded in 2014)
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Time_InsectSample
+	Attribute Label:  
+	Attribute Definition:  time of day when the insects were sampled. (Not recorded in 2014)
+	Storage Type:  dateTime
+	Measurement Scale: 
+	Missing Value Code: 
+
+
+	Attribute Name:  Spider
+	Attribute Label:  
+	Attribute Definition:  number of spiders (any species) found 
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Ant
+	Attribute Label:  
+	Attribute Definition:  number of ants (any species) found
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Ophraella
+	Attribute Label:  
+	Attribute Definition:  number of leaf beetles (Orphulella pelidna) found
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Paria
+	Attribute Label:  
+	Attribute Definition:  number of leaf beetles (Paria aterrima) found
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Uroleucon
+	Attribute Label:  
+	Attribute Definition:  number of aphids (Uroleucon ambrosiae) found
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Hesperotettix
+	Attribute Label:  
+	Attribute Definition:  number of grasshoppers (Hesperotettix floridensis) found
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Other_Grasshopper
+	Attribute Label:  
+	Attribute Definition:  number of grasshoppers other than Hesperotettix found
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Other_Planthoppers
+	Attribute Label:  
+	Attribute Definition:  number of planthoppers found
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Micrutalis
+	Attribute Label:  
+	Attribute Definition:  number of treehoppers (Micrutalis calva) found
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Cryptolaemus
+	Attribute Label:  
+	Attribute Definition:  number of small beetles (Cryptolaemus sp.) found. Species not identified
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Coccinella_septempunctata
+	Attribute Label:  
+	Attribute Definition:  number of 7-spot ladybugs (Coccinella septempunctata) found
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Cycloneda_sanguinea
+	Attribute Label:  
+	Attribute Definition:  number of spotless ladybugs (Cycloneda sanguinea) found
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Naemia
+	Attribute Label:  
+	Attribute Definition:  number of ladybugs (Naemia sp.) found. Species not identified
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Psyllobora
+	Attribute Label:  
+	Attribute Definition:  number of fungus-eating ladybugs (Psyllobora  sp.) species not identified
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Ladybug_Pupa
+	Attribute Label:  
+	Attribute Definition:  Number of ladybug pupa found. Species not identified
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Ladybug_Larva
+	Attribute Label:  
+	Attribute Definition:  Number of ladybug larvae found. Species not identified
+	Storage Type:  integer
+	Measurement Scale: 
+		Units:  number
+		Precision:  1
+		Number Type:  whole
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Location
+	Attribute Label:  
+	Attribute Definition:  Location of the patch
+	Storage Type:  string
+	Measurement Scale: 
+		Location of the patch
+	Missing Value Code: 
+
+
+	Attribute Name:  Location_Code
+	Attribute Label:  
+	Attribute Definition:  Numeric code for variable "Location"
+	Storage Type:  integer
+	Measurement Scale: 
+		1=  dike
+		2= airport
+		3= lighthouse
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Patch_ID
+	Attribute Label:  
+	Attribute Definition:  ID of patch within each location
+	Storage Type:  integer
+	Measurement Scale: 
+		ID of patch within each location
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Latitude
+	Attribute Label:  
+	Attribute Definition:  Latitude of the patch. Taken in 2014, using GPS device. NaNs in 6 sites because they were lost in year 2014.
+	Storage Type:  float
+	Measurement Scale: 
+		Units  degree
+		Precision:0.00000001		Number Type:  real
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Longitude
+	Attribute Label:  
+	Attribute Definition:   Longitude of the patch.Taken in 2014, using GPS device.
+	Storage Type:  float
+	Measurement Scale: 
+		Units  degree
+		Precision:0.00000001		Number Type:  real
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Sample_Date
+	Attribute Label:  
+	Attribute Definition:  Date when patch dimensions (L, W, H), Distance_to_Nearest  and surrounding environment were sampled.
+	Storage Type:  dateTime
+	Measurement Scale: 
+	Missing Value Code: 
+
+
+	Attribute Name:  Length
+	Attribute Label:  
+	Attribute Definition:  Length of the patch. Measured at a randomly chosen angle
+	Storage Type:  float
+	Measurement Scale: 
+		Units:  meter
+		Precision:  0.01
+		Number Type:  real
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Width
+	Attribute Label:  
+	Attribute Definition:  Width of the patch, measured at an angle perpendiculer to the "Length measurement"
+	Storage Type:  float
+	Measurement Scale: 
+		Units:  meter
+		Precision:  0.01
+		Number Type:  real
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Area
+	Attribute Label:  
+	Attribute Definition:  Area of the patch estimated by Length x Width
+	Storage Type:  float
+	Measurement Scale: 
+		Units:  squareMeter
+		Precision:  0.0001
+		Number Type:  real
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Height
+	Attribute Label:  
+	Attribute Definition:  Height of the patch. Measured with measuring stick
+	Storage Type:  float
+	Measurement Scale: 
+		Units:  meter
+		Precision:  0.01
+		Number Type:  real
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Distance_to_Nearest
+	Attribute Label:  
+	Attribute Definition:  The shortest distance between the focal patch and the nearest other patch of Iva frutescens
+	Storage Type:  float
+	Measurement Scale: 
+		Units:  meter
+		Precision:  0.01
+		Number Type:  real
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Noon_Shade
+	Attribute Label:  
+	Attribute Definition:  The percentage of patch shaded on the observation close to noon (13:00). Taken in 2013 Jun 8 to 11.
+	Storage Type:  float
+	Measurement Scale: 
+		Units:  dimensionless
+		Precision:  0.01
+		Number Type:  real
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Surround_Mud
+	Attribute Label:  
+	Attribute Definition:  Proportion of surrounding environment that was mud. Taken in 2013. Note that the four "Surround_" variables may not sum to 1 because there were other types not recorded.
+	Storage Type:  float
+	Measurement Scale: 
+		Units:  dimensionless
+		Precision:  0.1
+		Number Type:  real
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Surround_Borrichia
+	Attribute Label:  
+	Attribute Definition:  Proportion of surrounding environment as Borrichia frutescens
+	Storage Type:  float
+	Measurement Scale: 
+		Units:  dimensionless
+		Precision:  0.1
+		Number Type:  real
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Surround_Dry
+	Attribute Label:  
+	Attribute Definition:  Proportion of surrounding environment as dry land
+	Storage Type:  float
+	Measurement Scale: 
+		Units:  dimensionless
+		Precision:  0.1
+		Number Type:  real
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+
+	Attribute Name:  Surround_Grass
+	Attribute Label:  
+	Attribute Definition:  Proportion of surrounding environment as grass land
+	Storage Type:  float
+	Measurement Scale: 
+		Units:  dimensionless
+		Precision:  0.1
+		Number Type:  real
+	Missing Value Code: NaN  (value not recorded or censored based on quality control analysis (see methods))
+
+

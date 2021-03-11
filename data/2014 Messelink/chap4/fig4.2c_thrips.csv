@@ -1,0 +1,12 @@
+Location,Time,Date,Location_code,Patch_ID,Activity-density
+none,none,dd-mmm-yyyy,none,none,count
+nominal,series,datetime,code,nominal,data
+N/A,3,N/A,N/A,N/A,1.41951016250752
+N/A,4,N/A,N/A,N/A,6.13454326589195
+N/A,5,N/A,N/A,N/A,11.1597759155516
+N/A,6,N/A,N/A,N/A,30.1041714894208
+N/A,7,N/A,N/A,N/A,36.0572248715218
+N/A,8,N/A,N/A,N/A,56.8554099726839
+N/A,9,N/A,N/A,N/A,98.6851243113107
+N/A,10,N/A,N/A,N/A,81.4426593823788
+N/A,11,N/A,N/A,N/A,62.3454789573591

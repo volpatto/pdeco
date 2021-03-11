@@ -1,0 +1,9 @@
+Location,Time,Date,Location_code,Patch_ID,Uroleucon,Cycloneda_sanguinea
+none,none,dd-mmm-yyyy,none,none,count,count
+nominal,series,datetime,code,nominal,data,data
+airport,1,31-May-13,2,1,56,1
+airport,4,3-Jun-13,2,1,39,0
+airport,7,6-Jun-13,2,1,51,0
+airport,10,9-Jun-13,2,1,62,0
+airport,13,12-Jun-13,2,1,73,0
+airport,16,15-Jun-13,2,1,94,0

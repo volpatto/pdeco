@@ -1,0 +1,7 @@
+Location,Time,Date,Location_code,Patch_ID,Activity-density
+none,none,dd-mmm-yyyy,none,none,count
+nominal,series,datetime,code,nominal,data
+N/A,4,N/A,N/A,N/A,63.1578947368435
+N/A,6,N/A,N/A,N/A,52.6315789473702
+N/A,8,N/A,N/A,N/A,147.368421052634
+N/A,10,N/A,N/A,N/A,63.1578947368435
