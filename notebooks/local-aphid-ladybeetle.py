@@ -23,7 +23,7 @@ from scipy.integrate import solve_ivp  # to solve ODE system
 from scipy import optimize
 import pandas as pd
 
-np.seterr('raise')
+np.seterr('warn')
 # -
 
 # ## Obtaining Initial Conditions
@@ -147,6 +147,7 @@ def PPRM_least_squares_error_ode(
 # * Now we calibrate minimizing the residual applying the Differential Evolution method, a global optimization method, provided by `scipy`:
 
 # +
+# %%time
 def callback_de(xk, convergence):
     """
     This function is to show the optimization procedure progress.
