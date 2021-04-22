@@ -2,6 +2,8 @@
 
 **READ HERE: This is an early stage research and it should not be considered for reproduction, replication and to draw conclusions.**
 
+Try it out in your browser: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/volpatto/pdeco/HEAD)
+
 ## What is it?
 
 This repo constains studies of population dynamics considering both functional responses as well as diffusion effects for Prey-Predator system composed
