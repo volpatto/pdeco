@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # ---
 # jupyter:
 #   jupytext:
@@ -21,8 +22,10 @@ from numba import jit
 import numpy as np  # linear algebra
 from scipy.integrate import solve_ivp  # to solve ODE system
 import pandas as pd
+import warnings
 
 np.seterr('raise')
+warnings.filterwarnings("ignore")
 # -
 
 # ## Obtaining Initial Conditions
@@ -709,4 +712,370 @@ ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=len(problem_info[
 
 plt.tight_layout()
 plt.savefig("SA_pest_pop_sigma_derivative.png", dpi=300)
+plt.show()
+# -
+
+# # Bayesian calibration
+
+# +
+import theano  # to control better pymc3 backend and write a wrapper
+import theano.tensor as t  # for the wrapper to a custom model to pymc3
+THEANO_FLAGS = "optimizer=fast_compile"  # A theano trick
+
+@theano.compile.ops.as_op(
+    itypes=[
+        t.dvector, 
+        t.dscalar,  # r1 
+        t.dscalar,  # r2
+        t.dscalar,  # p
+        t.dscalar,  # i
+        t.dscalar,  # e1
+        t.dscalar,  # e2
+        t.dscalar,  # e3
+        t.dscalar,  # u0
+        t.dscalar,  # v0
+    ], 
+    otypes=[t.dmatrix]
+)
+def BKM_ode_wrapper(time_exp, r1, r2, p, i, e1, e2, e3, u0, v0):
+    time_span = (time_exp.min(), time_exp.max())
+
+    args = [r1, r2, p, i, e1, e2, e3]
+    initial_conditions = np.array([u0, v0])
+    y_model = solve_ivp(
+        BKM_model, 
+        time_span, 
+        initial_conditions, 
+        t_eval=time_exp, 
+        method='LSODA',
+        args=args
+    )
+    simulated_time = y_model.t
+    simulated_ode_solution = y_model.y
+    simulated_qoi1, simulated_qoi2 = simulated_ode_solution
+
+    concatenate_simulated_qoi = np.vstack([simulated_qoi1, simulated_qoi2]).T
+
+    return concatenate_simulated_qoi
+# +
+import pymc3 as pm  # for uncertainty quantification and model calibration
+import time
+
+observed_aphids = aphid_observed.Density.values.astype(np.float64)
+observed_ladybeetles = ladybeetle_observed.Density.values.astype(np.float64)
+observations_to_fit = np.vstack([observed_aphids, observed_ladybeetles]).T  # note the transpose here
+time_observations = aphid_data.Time.values.astype(np.float64)
+
+print("\n*** Performing Bayesian calibration ***")
+
+print("-- Running Monte Carlo simulations:")
+draws = 1000
+start_time = time.time()
+percent_calibration = 0.9
+with pm.Model() as model_smc:
+    # Prior distributions for the model's parameters
+    r1_range_factor = 1.0
+    r1_ = pm.Uniform(
+        "r1", 
+        lower=(1.0 - r1_range_factor * percent_calibration) * r1,
+        upper=(1.0 + r1_range_factor * percent_calibration) * r1,
+    )
+    r2_ = pm.Uniform(
+        "r2", 
+        lower=0,  # (1.0 - percent_calibration) * r2, 
+        upper=1e-2  # (1.0 + percent_calibration) * r2,
+    )
+#     r2_ = pm.Data("r2", r2)  # r2 values tend to zero
+    p_ = pm.Uniform(
+        "p", 
+        lower=(1.0 - percent_calibration) * p, 
+        upper=(1.0 + percent_calibration) * p,
+    )
+#     i_ = pm.Uniform(
+#         "i", 
+#         lower=(1.0 - percent_calibration) * i, 
+#         upper=(1.0 + percent_calibration) * i,
+#     )
+    i_ = pm.Data("i", i)
+    e1_ = pm.Data("e1", e1)
+    e2_ = pm.Data("e2", e2)
+    e3_ = pm.Data("e3", e3)
+    
+    # Prioris for Initial Conditions
+    u0, v0 = y0_BKM
+    u0_ = pm.Data("u0", u0)
+    v0_ = pm.Data("v0", v0)
+
+    standard_deviation = pm.Uniform("std_deviation", lower=0, upper=600, shape=2)  # note 'shape' here
+
+    # Wrapper for time. We need it this way in order to change it for predictions
+    time_calibration = pm.Data("time", time_observations)
+
+    # Defining the deterministic formulation of the problem
+    fitting_model = pm.Deterministic(
+        "BKM_model",
+        BKM_ode_wrapper(
+            time_calibration,
+            r1_,
+            r2_,
+            p_,
+            i_,
+            e1_,
+            e2_,
+            e3_,
+            u0_,
+            v0_
+        ),
+    )
+    
+    likelihood_model = pm.Normal(
+        "likelihood_model", mu=fitting_model, sigma=standard_deviation, observed=observations_to_fit
+    )
+
+    trace_calibration = pm.sample_smc(
+        draws=draws, n_steps=25, parallel=True, cores=3, random_seed=seed
+    )
+
+duration = time.time() - start_time
+
+print(f"-- Monte Carlo simulations done in {duration / 60:.3f} minutes")
+# -
+
+
+plt.hist(trace_calibration['p'], bins=35)
+plt.show()
+
+calibration_variable_names = [
+    "std_deviation",
+    "r1",
+    "r2",
+    "p",
+]
+
+plot_step = 1
+progress_bar = tqdm(calibration_variable_names)
+for variable in progress_bar:
+    pm.plot_posterior(
+        trace_calibration[::plot_step], 
+        var_names=(f"{variable}"), 
+        kind="hist", 
+        round_to=5,
+        point_estimate="mode"
+    )
+    plt.savefig(f"{variable}_posterior_cal.png")
+
+# +
+import arviz as az
+
+az.plot_pair(
+    trace_calibration,
+    var_names=calibration_variable_names,
+    kind="hexbin",
+    fill_last=False,
+    figsize=(10, 8),
+)
+plt.savefig("marginals_cal.png")
+
+# +
+df_stats_summary = az.summary(
+    data=trace_calibration,
+    var_names=calibration_variable_names,
+    kind='stats',
+    round_to=15,  # arredondamento de ponto flutuante no sumário
+)
+
+df_stats_summary
+# -
+
+# Auxiliary functions to compute the Most Probable Value (MPV):
+
+# +
+from scipy.stats import gaussian_kde  # to calculate MPV from KDE
+
+def _scalar_rv_mvp_estimation(rv_realization_values: np.ndarray) -> np.ndarray:
+    num_of_realizations = len(rv_realization_values)
+    kernel = gaussian_kde(rv_realization_values)
+    equally_spaced_samples = np.linspace(
+        rv_realization_values.min(),
+        rv_realization_values.max(),
+        num_of_realizations
+    )
+    kde = kernel(equally_spaced_samples)
+    kde_max_index = np.argmax(kde)
+    rv_mpv_value = equally_spaced_samples[kde_max_index]
+    return rv_mpv_value
+
+
+def calculate_rv_posterior_mpv(pm_trace, variable_names: list) -> dict:
+    rv_mpv_values_dict = dict()
+    progress_bar = tqdm(variable_names)
+    for variable in progress_bar:
+        progress_bar.set_description(f"Calulating MPV from KDE for {variable}")
+        rv_realization_values = pm_trace[f"{variable}"]
+
+        try:
+            num_of_dimensions = rv_realization_values.shape[1]
+        except IndexError:
+            num_of_dimensions = 0
+
+        if num_of_dimensions == 0:
+            rv_mpv_value = _scalar_rv_mvp_estimation(rv_realization_values)
+            rv_mpv_values_dict[f"{variable}"] = rv_mpv_value
+        else:
+            for dimension in range(num_of_dimensions):
+                variable_name_decomposed = f"{variable}[{dimension}]"
+                rv_realization_values_decomposed = np.array(rv_realization_values[:, dimension])
+                rv_mpv_value = _scalar_rv_mvp_estimation(rv_realization_values_decomposed)
+                rv_mpv_values_dict[f"{variable_name_decomposed}"] = rv_mpv_value
+
+    return rv_mpv_values_dict
+
+
+def add_mpv_to_summary(arviz_summary: pd.DataFrame, rv_modes_dict: dict) -> pd.DataFrame:
+    new_arviz_summary = arviz_summary.copy()
+    variable_names = list(rv_modes_dict.keys())
+    rv_mode_values = list(rv_modes_dict.values())
+    new_arviz_summary["mpv"] = pd.Series(data=rv_mode_values, index=variable_names)
+    return new_arviz_summary
+
+
+# +
+calibration_variable_mpv = calculate_rv_posterior_mpv(
+    pm_trace=trace_calibration, variable_names=calibration_variable_names
+)
+df_stats_summary = add_mpv_to_summary(df_stats_summary, calibration_variable_mpv)
+df_stats_summary.to_csv("stats_summary_calibration.csv")  # salvando em um csv para consultas
+
+df_stats_summary
+
+# +
+percentile_cut = 2.5
+
+y_min = np.percentile(trace_calibration["BKM_model"], percentile_cut, axis=0)
+y_max = np.percentile(trace_calibration["BKM_model"], 100 - percentile_cut, axis=0)
+y_fit = np.percentile(trace_calibration["BKM_model"], 50, axis=0)
+
+# +
+plt.figure(figsize=(15, 5))
+
+plt.plot(
+    time_observations,
+    y_fit[:, 0],
+    "r",
+    label="Aphids (simulated)",
+    marker="X",
+    linestyle="-",
+    markersize=10,
+)
+plt.fill_between(time_observations, y_min[:, 0], y_max[:, 0], color="r", alpha=0.2)
+
+plt.plot(
+    time_observations,
+    y_fit[:, 1],
+    "b",
+    label="Ladybeetles (simulated)",
+    marker="o",
+    linestyle="-",
+    markersize=10,
+)
+plt.fill_between(time_observations, y_min[:, 1], y_max[:, 1], color="b", alpha=0.2)
+
+plt.plot(
+    time_observations, 
+    aphid_observed.Density.values, 
+    label="Aphids data", 
+    marker="s", 
+    linestyle="", 
+    markersize=10
+)
+plt.plot(
+    time_observations, 
+    ladybeetle_observed.Density.values, 
+    label="Ladybeetles data", 
+    marker="v", 
+    linestyle="", 
+    markersize=10
+)
+
+plt.legend(shadow=True)
+plt.xlabel('Time', fontsize=15)
+plt.ylabel('Population densities', fontsize=15)
+
+plt.tight_layout()
+plt.savefig("calibration.png", dpi=300)
+plt.show()
+
+# +
+print("-- Exporting calibrated parameter to CSV")
+
+start_time = time.time()
+
+dict_realizations = dict()  # vamos gravar as realizações em um dicionário Python tbm
+progress_bar = tqdm(calibration_variable_names[1:])
+for variable in progress_bar:
+    progress_bar.set_description(f"Gathering {variable} realizations")
+    parameter_realization = trace_calibration.get_values(f"{variable}")
+    dict_realizations[f"{variable}"] = parameter_realization
+
+df_realizations = pd.DataFrame(dict_realizations)
+df_realizations.to_csv("calibration_realizations.csv")
+
+duration = time.time() - start_time
+
+print(f"-- Exported done in {duration:.3f} seconds")
+# -
+
+df_realizations
+
+# # Uncertainty propagation
+
+# +
+t0 = aphid_data.Time.values.min()
+tf = aphid_data.Time.values.max()
+time_to_forecast = 250
+time_range_prediction = np.linspace(t0, tf + time_to_forecast, 100)
+
+start_time = time.time()
+with model_smc:
+    # We update the Data container "years"
+    pm.set_data({"time": time_range_prediction})
+
+    # Then we sample from the calibration posterior
+    model_prediction = pm.sample_posterior_predictive(
+        trace_calibration,
+        var_names=["BKM_model"],
+        random_seed=seed
+    )["BKM_model"]  # Should we use likelihood_model or BKM_model?
+
+duration = time.time() - start_time
+# -
+
+mean_model_prediction = model_prediction.mean(axis=0)
+percentile_cut = 2.5
+credible_lower = np.percentile(model_prediction, q=percentile_cut, axis=0)
+credible_upper = np.percentile(model_prediction, q=100 - percentile_cut, axis=0)
+
+# +
+plt.figure(figsize=(20, 2*(5)))
+
+plt.subplot(2, 1, 1)
+plt.plot(time_observations, aphid_observed.Density.values, 'X', color='g', lw=4, ms=10.5, label='Observed')
+plt.plot(time_range_prediction, mean_model_prediction[:,0], color='g', lw=4, label='Aphid mean (simulated)')
+plt.plot(time_range_prediction, credible_lower[:,0], '--',  color='g', lw=2, label='Credible intervals')
+plt.plot(time_range_prediction, credible_upper[:,0], '--',  color='g', lw=2)
+plt.legend(fontsize=15, shadow=True)
+plt.xlabel('Time', fontsize=15)
+plt.ylabel('Aphid density', fontsize=15)
+
+plt.subplot(2, 1, 2)
+plt.plot(time_observations, ladybeetle_observed.Density.values, 'X', color='b', lw=4, ms=10.5, label='Observed')
+plt.plot(time_range_prediction, mean_model_prediction[:,1], color='b', lw=4, label='Ladybeetle mean (simulated)')
+plt.plot(time_range_prediction, credible_lower[:,1], '--', color='b', lw=2, label='Credible intervals')
+plt.plot(time_range_prediction, credible_upper[:,1], '--',  color='b', lw=2)
+plt.legend(fontsize=15, shadow=True)
+plt.ylabel('Ladybeetle density', fontsize=15)
+plt.xlabel('Time', fontsize=15)
+
+plt.tight_layout()
+plt.savefig("projections.png", dpi=300)
 plt.show()

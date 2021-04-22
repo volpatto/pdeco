@@ -4,7 +4,9 @@ h5py==3.0.0
 pandas==1.1.4
 tqdm==4.51.0
 ffmpeg==1.4
-SALib
+SALib==1.3.13
+pymc3<3.10
+arviz<=0.11.0
 
 # Excel IO with pandas
 xlrd==1.2.0
@@ -18,5 +20,3 @@ jupytext==1.6.0
 # Plotting
 matplotlib==3.3.2
 
-# Auxiliary
-invoke==1.4.1
