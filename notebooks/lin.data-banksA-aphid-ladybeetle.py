@@ -833,7 +833,7 @@ with pm.Model() as model_smc:
     )
 
     trace_calibration = pm.sample_smc(
-        draws=draws, n_steps=25, parallel=True, cores=3, random_seed=seed
+        draws=draws, n_steps=25, parallel=True, cores=2, random_seed=seed
     )
 
 duration = time.time() - start_time
