@@ -777,7 +777,7 @@ print("-- Running Monte Carlo simulations:")
 draws = 1000
 start_time = time.time()
 percent_calibration = 0.95
-with pm.Model() as model_smc:
+with pm.Model() as fine_model:
     # Prior distributions for the model's parameters
     r1_range_factor = 1.0
     r1_ = pm.Uniform(
@@ -787,8 +787,8 @@ with pm.Model() as model_smc:
     )
 #     r2_ = pm.Uniform(
 #         "r2", 
-#         lower=1e-10,
-#         upper=1e-2
+#         lower=(1.0 - percent_calibration) * r2, 
+#         upper=(1.0 + percent_calibration) * r2,
 #     )
     r2_ = pm.Data("r2", r2)  # r2 values tend to zero
     p_ = pm.Uniform(
@@ -801,6 +801,7 @@ with pm.Model() as model_smc:
         lower=(1.0 - percent_calibration) * i, 
         upper=(1.0 + percent_calibration) * i,
     )
+#     i_ = pm.Data("i", i)
     e1_ = pm.Data("e1", e1)
     e2_ = pm.Data("e2", e2)
     e3_ = pm.Data("e3", e3)
@@ -810,7 +811,7 @@ with pm.Model() as model_smc:
     u0_ = pm.Data("u0", u0)
     v0_ = pm.Data("v0", v0)
 
-    standard_deviation = pm.Uniform("std_deviation", lower=0, upper=400, shape=2)  # note 'shape' here
+    standard_deviation = pm.Uniform("std_deviation", lower=1, upper=400, shape=2)  # note 'shape' here
 
     # Wrapper for time. We need it this way in order to change it for predictions
     time_calibration = pm.Data("time", time_observations)
@@ -835,10 +836,142 @@ with pm.Model() as model_smc:
     likelihood_model = pm.Normal(
         "likelihood_model", mu=fitting_model, sigma=standard_deviation, observed=observations_to_fit
     )
+    
+coarse_steps_1 = 4
+observed_aphids_coarse_1 = observed_aphids[::coarse_steps_1]
+observed_ladybeetles_coarse_1 = observed_ladybeetles[::coarse_steps_1]
+observations_to_fit_coarse_1 = np.vstack(
+    [observed_aphids_coarse_1, observed_ladybeetles_coarse_1]
+).T
+time_observations_coarse_1 = time_observations[::coarse_steps_1]
 
-    trace_calibration = pm.sample_smc(
-        draws=draws, n_steps=25, parallel=True, cores=2, random_seed=seed
+with pm.Model() as coarse_model_1:
+    # Prior distributions for the model's parameters
+    r1_range_factor = 1.0
+    r1_ = pm.Uniform(
+        "r1", 
+        lower=(1.0 - r1_range_factor * percent_calibration) * r1,
+        upper=(1.0 + r1_range_factor * percent_calibration) * r1,
     )
+#     r2_ = pm.Uniform(
+#         "r2", 
+#         lower=(1.0 - percent_calibration) * r2, 
+#         upper=(1.0 + percent_calibration) * r2,
+#     )
+    r2_ = pm.Data("r2", r2)  # r2 values tend to zero
+    p_ = pm.Uniform(
+        "p", 
+        lower=(1.0 - percent_calibration) * p, 
+        upper=(1.0 + percent_calibration) * p,
+    )
+    i_ = pm.Uniform(
+        "i", 
+        lower=(1.0 - percent_calibration) * i, 
+        upper=(1.0 + percent_calibration) * i,
+    )
+#     i_ = pm.Data("i", i)
+    e1_ = pm.Data("e1", e1)
+    e2_ = pm.Data("e2", e2)
+    e3_ = pm.Data("e3", e3)
+    
+    # Prioris for Initial Conditions
+    u0, v0 = y0_BKM
+    u0_ = pm.Data("u0", u0)
+    v0_ = pm.Data("v0", v0)
+
+    standard_deviation = pm.Uniform("std_deviation", lower=1, upper=400, shape=2)  # note 'shape' here
+
+    # Wrapper for time. We need it this way in order to change it for predictions
+    time_calibration = pm.Data("time", time_observations_coarse_1)
+
+    # Defining the deterministic formulation of the problem
+    fitting_model = pm.Deterministic(
+        "BKM_model",
+        BKM_ode_wrapper(
+            time_calibration,
+            r1_,
+            r2_,
+            p_,
+            i_,
+            e1_,
+            e2_,
+            e3_,
+            u0_,
+            v0_
+        ),
+    )
+    
+    likelihood_model = pm.Normal(
+        "likelihood_model", mu=fitting_model, sigma=standard_deviation, observed=observations_to_fit_coarse_1
+    )
+
+coarse_steps_2 = 2
+observed_aphids_coarse_2 = observed_aphids[::coarse_steps_2]
+observed_ladybeetles_coarse_2 = observed_ladybeetles[::coarse_steps_2]
+observations_to_fit_coarse_2 = np.vstack(
+    [observed_aphids_coarse_2, observed_ladybeetles_coarse_2]
+).T
+time_observations_coarse_2 = time_observations[::coarse_steps_2]    
+
+with pm.Model() as coarse_model_2:
+    # Prior distributions for the model's parameters
+    r1_range_factor = 1.0
+    r1_ = pm.Uniform(
+        "r1", 
+        lower=(1.0 - r1_range_factor * percent_calibration) * r1,
+        upper=(1.0 + r1_range_factor * percent_calibration) * r1,
+    )
+    r2_ = pm.Uniform(
+        "r2", 
+        lower=1e-8,
+        upper=1e-2
+    )
+    p_ = pm.Uniform(
+        "p", 
+        lower=(1.0 - percent_calibration) * p, 
+        upper=(1.0 + percent_calibration) * p,
+    )
+    i_ = pm.Data("i", i)
+    e1_ = pm.Data("e1", e1)
+    e2_ = pm.Data("e2", e2)
+    e3_ = pm.Data("e3", e3)
+    
+    # Prioris for Initial Conditions
+    u0, v0 = y0_BKM
+    u0_ = pm.Data("u0", u0)
+    v0_ = pm.Data("v0", v0)
+
+    standard_deviation = pm.Uniform("std_deviation", lower=0, upper=600, shape=2)  # note 'shape' here
+
+    # Wrapper for time. We need it this way in order to change it for predictions
+    time_calibration = pm.Data("time", time_observations_coarse_2)
+
+    # Defining the deterministic formulation of the problem
+    fitting_model = pm.Deterministic(
+        "BKM_model",
+        BKM_ode_wrapper(
+            time_calibration,
+            r1_,
+            r2_,
+            p_,
+            i_,
+            e1_,
+            e2_,
+            e3_,
+            u0_,
+            v0_
+        ),
+    )
+    
+    likelihood_model = pm.Normal(
+        "likelihood_model", mu=fitting_model, sigma=standard_deviation, observed=observations_to_fit_coarse_2
+    )    
+
+
+with fine_model:
+    step = pm.MLDA(coarse_models=[coarse_model_1], subsampling_rates=[5])
+#     step = pm.DEMetropolisZ()
+    trace_calibration = pm.sample(draws=4500, chains=4, cores=4, tune=1000, step=step, random_seed=seed)
 
 duration = time.time() - start_time
 
@@ -846,7 +979,7 @@ print(f"-- Monte Carlo simulations done in {duration / 60:.3f} minutes")
 # -
 
 
-plt.hist(trace_calibration['p'], bins=35)
+plt.hist(trace_calibration['r1'], bins=35)
 plt.show()
 
 calibration_variable_names = [
@@ -863,7 +996,7 @@ for variable in progress_bar:
         trace_calibration[::plot_step], 
         var_names=(f"{variable}"), 
         kind="hist", 
-        round_to=5,
+        round_to=4,
         point_estimate="mode"
     )
     plt.savefig(f"{variable}_posterior_cal.png")
@@ -873,6 +1006,7 @@ az.plot_pair(
     var_names=calibration_variable_names,
     kind="hexbin",
     fill_last=False,
+    marginals=True,
     figsize=(10, 8),
 )
 plt.savefig("marginals_cal.png")
@@ -1028,61 +1162,6 @@ print(f"-- Exported done in {duration:.3f} seconds")
 
 df_realizations
 
-# ## Uncertainty propagation
-
-# +
-t0 = aphid_data.Time.values.min()
-tf = aphid_data.Time.values.max()
-time_to_forecast = 250
-time_range_prediction = np.linspace(t0, tf + time_to_forecast, 100)
-
-start_time = time.time()
-with model_smc:
-    # We update the Data container "years"
-    pm.set_data({"time": time_range_prediction})
-
-    # Then we sample from the calibration posterior
-    model_prediction = pm.sample_posterior_predictive(
-        trace_calibration,
-        var_names=["BKM_model"],
-        random_seed=seed
-    )["BKM_model"]  # Should we use likelihood_model or BKM_model?
-
-duration = time.time() - start_time
-# -
-
-mean_model_prediction = model_prediction.mean(axis=0)
-percentile_cut = 2.5
-credible_lower = np.percentile(model_prediction, q=percentile_cut, axis=0)
-credible_upper = np.percentile(model_prediction, q=100 - percentile_cut, axis=0)
-
-# +
-plt.figure(figsize=(20, 2*(5)))
-
-plt.subplot(2, 1, 1)
-plt.plot(time_observations, aphid_observed.Density.values, 'X', color='g', lw=4, ms=10.5, label='Observed')
-plt.plot(time_range_prediction, mean_model_prediction[:,0], color='g', lw=4, label='Aphid mean (simulated)')
-plt.plot(time_range_prediction, credible_lower[:,0], '--',  color='g', lw=2, label='Credible intervals')
-plt.plot(time_range_prediction, credible_upper[:,0], '--',  color='g', lw=2)
-plt.legend(fontsize=15, shadow=True)
-plt.xlabel('Time', fontsize=15)
-plt.ylabel('Aphid density', fontsize=15)
-
-plt.subplot(2, 1, 2)
-plt.plot(time_observations, ladybeetle_observed.Density.values, 'X', color='b', lw=4, ms=10.5, label='Observed')
-plt.plot(time_range_prediction, mean_model_prediction[:,1], color='b', lw=4, label='Ladybeetle mean (simulated)')
-plt.plot(time_range_prediction, credible_lower[:,1], '--', color='b', lw=2, label='Credible intervals')
-plt.plot(time_range_prediction, credible_upper[:,1], '--',  color='b', lw=2)
-plt.legend(fontsize=15, shadow=True)
-plt.ylabel('Ladybeetle density', fontsize=15)
-plt.xlabel('Time', fontsize=15)
-
-plt.tight_layout()
-plt.savefig("projections.png", dpi=300)
-plt.show()
-
-
-# -
 
 # # Prey-Predator logistic Lotka-Volterra
 
@@ -1098,7 +1177,7 @@ def LLV_model(
     m=1,
 ):
     """
-    Prey-Predator Rosenzweig-MacArthur (PPRM) python implementation.
+    Prey-Predator logistic Lotka-Volterra (LLV) python implementation.
     """
     u, v = X
     u_prime = r * u * ( 1 - u / K ) - a * u * v
@@ -1173,7 +1252,6 @@ bounds_LLV = [
     (1e-10, 1),  # a
     (1e-10, 5),  # ef
     (1e-10, 5),  # m
-#     (10, 50),  # m
 ]
 
 result_LLV = optimize.differential_evolution(
@@ -1585,10 +1663,10 @@ def LLV_ode_wrapper(time_exp, r, K, a, ef, m, u0, v0):
 
 
 # +
-observed_aphids = aphid_observed.Density.values.astype(np.float64)
-observed_ladybeetles = ladybeetle_observed.Density.values.astype(np.float64)
-observations_to_fit = np.vstack([observed_aphids, observed_ladybeetles]).T
-time_observations = aphid_data.Time.values.astype(np.float64)
+observed_aphids_fine = aphid_observed.Density.values.astype(np.float64)
+observed_ladybeetles_fine = ladybeetle_observed.Density.values.astype(np.float64)
+observations_to_fit_fine = np.vstack([observed_aphids_fine, observed_ladybeetles_fine]).T
+time_observations_fine = aphid_data.Time.values.astype(np.float64)
 
 print("\n*** Performing Bayesian calibration ***")
 
@@ -1596,7 +1674,7 @@ print("-- Running Monte Carlo simulations:")
 draws = 1000
 start_time = time.time()
 percent_calibration = 0.95
-with pm.Model() as model_smc_LLV:
+with pm.Model() as fine_model_LLV:
     # Prior distributions for the model's parameters
     r_ = pm.Data("r", r_deterministic)  
     K_ = pm.Data("K", K_deterministic)  
@@ -1607,8 +1685,8 @@ with pm.Model() as model_smc_LLV:
     )
     ef_ = pm.Uniform(
         "ef",
-        lower=0,
-        upper=ef_deterministic,
+        lower=0, 
+        upper=(1.0 + percent_calibration) * ef_deterministic,
     )
     m_ = pm.Uniform(
         "m", 
@@ -1624,7 +1702,7 @@ with pm.Model() as model_smc_LLV:
     standard_deviation = pm.Uniform("std_deviation", lower=0, upper=1000, shape=2)  # note 'shape' here
 
     # Wrapper for time. We need it this way in order to change it for predictions
-    time_calibration = pm.Data("time", time_observations)
+    time_calibration = pm.Data("time", time_observations_fine)
 
     # Defining the deterministic formulation of the problem
     fitting_model = pm.Deterministic(
@@ -1642,13 +1720,70 @@ with pm.Model() as model_smc_LLV:
     )
     
     likelihood_model = pm.Normal(
-        "likelihood_model", mu=fitting_model, sigma=standard_deviation, observed=observations_to_fit
+        "likelihood_model", mu=fitting_model, sigma=standard_deviation, observed=observations_to_fit_fine
     )
 
-    trace_calibration_LLV = pm.sample_smc(
-        draws=draws, n_steps=25, parallel=True, cores=2, random_seed=seed
+
+coarse_step = 4
+observed_aphids_coarse = observed_aphids_fine[::coarse_step]
+observed_ladybeetles_coarse = observed_ladybeetles_fine[::coarse_step]
+observations_to_fit_coarse = np.vstack([observed_aphids_coarse, observed_ladybeetles_coarse]).T
+time_observations_coarse = time_observations_fine[::coarse_step]
+with pm.Model() as coarse_model_LLV:
+    # Prior distributions for the model's parameters
+    r_ = pm.Data("r", r_deterministic)  
+    K_ = pm.Data("K", K_deterministic)  
+    a_ = pm.Uniform(
+        "a", 
+        lower=(1.0 - percent_calibration) * a_deterministic, 
+        upper=(1.0 + 1.5 * percent_calibration) * a_deterministic,
+    )
+    ef_ = pm.Uniform(
+        "ef",
+        lower=0, 
+        upper=(1.0 + percent_calibration) * ef_deterministic,
+    )
+    m_ = pm.Uniform(
+        "m", 
+        lower=(1.0 - percent_calibration) * m_deterministic, 
+        upper=(1.0 + percent_calibration) * m_deterministic,
+    )
+    
+    # Prioris for Initial Conditions
+    u0, v0 = y0_BKM
+    u0_ = pm.Data("u0", u0)
+    v0_ = pm.Data("v0", v0)
+
+    standard_deviation = pm.Uniform("std_deviation", lower=0, upper=1000, shape=2)  # note 'shape' here
+
+    # Wrapper for time. We need it this way in order to change it for predictions
+    time_calibration = pm.Data("time", time_observations_coarse)
+
+    # Defining the deterministic formulation of the problem
+    fitting_model = pm.Deterministic(
+        "LLV_model",
+        LLV_ode_wrapper(
+            time_calibration,
+            r_,
+            K_,
+            a_,
+            ef_,
+            m_,
+            u0_,
+            v0_
+        ),
+    )
+    
+    likelihood_model = pm.Normal(
+        "likelihood_model", mu=fitting_model, sigma=standard_deviation, observed=observations_to_fit_coarse
     )
 
+    
+with fine_model_LLV:
+    step = pm.MLDA(coarse_models=[coarse_model_LLV], subsampling_rates=[5])
+#     step = pm.DEMetropolisZ()
+    trace_calibration_LLV = pm.sample(draws=4500, chains=4, cores=4, tune=1000, step=step, random_seed=seed)
+    
 duration = time.time() - start_time
 
 print(f"-- Monte Carlo simulations done in {duration / 60:.3f} minutes")
@@ -1678,6 +1813,7 @@ az.plot_pair(
     var_names=calibration_variable_names,
     kind="hexbin",
     fill_last=False,
+    marginals=True,
     figsize=(10, 8),
 )
 plt.savefig("marginals_cal_LLV.png")
@@ -1767,7 +1903,7 @@ dict_realizations = dict()  # vamos gravar as realizações em um dicionário Py
 progress_bar = tqdm(calibration_variable_names[1:])
 for variable in progress_bar:
     progress_bar.set_description(f"Gathering {variable} realizations")
-    parameter_realization = trace_calibration.get_values(f"{variable}")
+    parameter_realization = trace_calibration_LLV.get_values(f"{variable}")
     dict_realizations[f"{variable}"] = parameter_realization
 
 df_realizations = pd.DataFrame(dict_realizations)
@@ -1780,7 +1916,45 @@ print(f"-- Exported done in {duration:.3f} seconds")
 
 df_realizations
 
-# ## Uncertainty propagation
+# # Model comparison/selection
+#
+# Check [this example](https://docs.pymc.io/pymc-examples/examples/diagnostics_and_criticism/model_comparison.html) for further information.
+#
+# TL;DR: The "score", which is "loo" or "waic" in the printed dataframe bellow, should the greatest for the best model. The `weight` is one of the most important information, because it loosely tell the probability of the model to be the "correct one" among all the compared models.
+
+# +
+print("\n*** Performing model comparison ***")
+start_time = time.time()
+
+models_to_compare = {
+    "BKM": trace_calibration,
+    "LLV": trace_calibration_LLV,
+}
+
+# Choose ic='loo' or ic='waic'
+df_model_comparison = pm.compare(
+    models_to_compare, 
+    ic='loo',
+    method='BB-pseudo-BMA',
+    b_samples=3000,
+    seed=seed
+)
+
+duration = time.time() - start_time
+
+print(f"-- Model comparison done in {duration / 60:.3f} minutes")
+
+df_model_comparison
+
+# +
+az.plot_compare(df_model_comparison, figsize=(12, 4), insample_dev=False)
+
+plt.show()
+# -
+
+# # Uncertainty propagation
+
+# ## BKM model
 
 # +
 t0 = aphid_data.Time.values.min()
@@ -1788,8 +1962,52 @@ tf = aphid_data.Time.values.max()
 time_to_forecast = 250
 time_range_prediction = np.linspace(t0, tf + time_to_forecast, 100)
 
-start_time = time.time()
-with model_smc_LLV:
+with fine_model:
+    # We update the Data container "years"
+    pm.set_data({"time": time_range_prediction})
+
+    # Then we sample from the calibration posterior
+    model_prediction = pm.sample_posterior_predictive(
+        trace_calibration,
+        var_names=["BKM_model"],
+        random_seed=seed
+    )["BKM_model"]  # Should we use likelihood_model or BKM_model?
+# -
+
+mean_model_prediction = model_prediction.mean(axis=0)
+percentile_cut = 2.5
+credible_lower = np.percentile(model_prediction, q=percentile_cut, axis=0)
+credible_upper = np.percentile(model_prediction, q=100 - percentile_cut, axis=0)
+
+# +
+plt.figure(figsize=(20, 2*(5)))
+
+plt.subplot(2, 1, 1)
+plt.plot(time_observations, aphid_observed.Density.values, 'X', color='g', lw=4, ms=10.5, label='Observed')
+plt.plot(time_range_prediction, mean_model_prediction[:,0], color='g', lw=4, label='Aphid mean (simulated)')
+plt.plot(time_range_prediction, credible_lower[:,0], '--',  color='g', lw=2, label='Credible intervals')
+plt.plot(time_range_prediction, credible_upper[:,0], '--',  color='g', lw=2)
+plt.legend(fontsize=15, shadow=True)
+plt.xlabel('Time', fontsize=15)
+plt.ylabel('Aphid density', fontsize=15)
+
+plt.subplot(2, 1, 2)
+plt.plot(time_observations, ladybeetle_observed.Density.values, 'X', color='b', lw=4, ms=10.5, label='Observed')
+plt.plot(time_range_prediction, mean_model_prediction[:,1], color='b', lw=4, label='Ladybeetle mean (simulated)')
+plt.plot(time_range_prediction, credible_lower[:,1], '--', color='b', lw=2, label='Credible intervals')
+plt.plot(time_range_prediction, credible_upper[:,1], '--',  color='b', lw=2)
+plt.legend(fontsize=15, shadow=True)
+plt.ylabel('Ladybeetle density', fontsize=15)
+plt.xlabel('Time', fontsize=15)
+
+plt.tight_layout()
+plt.savefig("projections.png", dpi=300)
+plt.show()
+# -
+
+# ## LLV model
+
+with fine_model_LLV:
     # We update the Data container "years"
     pm.set_data({"time": time_range_prediction})
 
@@ -1799,9 +2017,6 @@ with model_smc_LLV:
         var_names=["LLV_model"],
         random_seed=seed
     )["LLV_model"]  # likelihood_model or LLV_model?
-
-duration = time.time() - start_time
-# -
 
 mean_model_prediction = model_prediction.mean(axis=0)
 percentile_cut = 2.5
