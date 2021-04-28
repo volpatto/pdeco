@@ -5,7 +5,7 @@ pandas==1.1.4
 tqdm==4.51.0
 ffmpeg==1.4
 SALib==1.3.13
-pymc3==3.9.3
+pymc3==3.10.0
 arviz<=0.11.0
 
 jax

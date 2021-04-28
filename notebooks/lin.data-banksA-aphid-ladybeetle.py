@@ -25,10 +25,15 @@ from arviz.utils import Numba
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp  # to solve ODE system
 import pandas as pd
+import pymc3 as pm  # for uncertainty quantification and model calibration
+import theano  # to control better pymc3 backend and write a wrapper
+import theano.tensor as t  # for the wrapper to a custom model to pymc3
+import time
 import warnings
 
-np.seterr('raise')
+np.seterr('warn')
 warnings.filterwarnings("ignore")
+az.style.use("arviz-darkgrid")
 
 Numba.enable_numba()
 
@@ -719,14 +724,11 @@ ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=len(problem_info[
 plt.tight_layout()
 plt.savefig("SA_pest_pop_sigma_derivative.png", dpi=300)
 plt.show()
+
+
 # -
 
 # ## Bayesian calibration
-
-# +
-import theano  # to control better pymc3 backend and write a wrapper
-import theano.tensor as t  # for the wrapper to a custom model to pymc3
-THEANO_FLAGS = "optimizer=fast_compile"  # A theano trick
 
 @theano.compile.ops.as_op(
     itypes=[
@@ -764,9 +766,6 @@ def BKM_ode_wrapper(time_exp, r1, r2, p, i, e1, e2, e3, u0, v0):
 
     return concatenate_simulated_qoi
 # +
-import pymc3 as pm  # for uncertainty quantification and model calibration
-import time
-
 observed_aphids = aphid_observed.Density.values.astype(np.float64)
 observed_ladybeetles = ladybeetle_observed.Density.values.astype(np.float64)
 observations_to_fit = np.vstack([observed_aphids, observed_ladybeetles]).T  # note the transpose here
@@ -786,23 +785,22 @@ with pm.Model() as model_smc:
         lower=(1.0 - r1_range_factor * percent_calibration) * r1,
         upper=(1.0 + r1_range_factor * percent_calibration) * r1,
     )
-    r2_ = pm.Uniform(
-        "r2", 
-        lower=1e-10,
-        upper=1e-2
-    )
-#     r2_ = pm.Data("r2", r2)  # r2 values tend to zero
+#     r2_ = pm.Uniform(
+#         "r2", 
+#         lower=1e-10,
+#         upper=1e-2
+#     )
+    r2_ = pm.Data("r2", r2)  # r2 values tend to zero
     p_ = pm.Uniform(
         "p", 
         lower=(1.0 - percent_calibration) * p, 
         upper=(1.0 + percent_calibration) * p,
     )
-#     i_ = pm.Uniform(
-#         "i", 
-#         lower=(1.0 - percent_calibration) * i, 
-#         upper=(1.0 + percent_calibration) * i,
-#     )
-    i_ = pm.Data("i", i)
+    i_ = pm.Uniform(
+        "i", 
+        lower=(1.0 - percent_calibration) * i, 
+        upper=(1.0 + percent_calibration) * i,
+    )
     e1_ = pm.Data("e1", e1)
     e2_ = pm.Data("e2", e2)
     e3_ = pm.Data("e3", e3)
@@ -812,7 +810,7 @@ with pm.Model() as model_smc:
     u0_ = pm.Data("u0", u0)
     v0_ = pm.Data("v0", v0)
 
-    standard_deviation = pm.Uniform("std_deviation", lower=0, upper=600, shape=2)  # note 'shape' here
+    standard_deviation = pm.Uniform("std_deviation", lower=0, upper=400, shape=2)  # note 'shape' here
 
     # Wrapper for time. We need it this way in order to change it for predictions
     time_calibration = pm.Data("time", time_observations)
@@ -854,8 +852,8 @@ plt.show()
 calibration_variable_names = [
     "std_deviation",
     "r1",
-    "r2",
     "p",
+    "i"
 ]
 
 plot_step = 1
@@ -1597,7 +1595,7 @@ print("\n*** Performing Bayesian calibration ***")
 print("-- Running Monte Carlo simulations:")
 draws = 1000
 start_time = time.time()
-percent_calibration = 0.99
+percent_calibration = 0.95
 with pm.Model() as model_smc_LLV:
     # Prior distributions for the model's parameters
     r_ = pm.Data("r", r_deterministic)  
