@@ -17,6 +17,7 @@
 # # Aphid-Ladybeetle study
 
 # +
+import copy
 import numpy as np  # linear algebra
 from numba import jit
 
@@ -29,6 +30,7 @@ import pymc3 as pm  # for uncertainty quantification and model calibration
 import theano  # to control better pymc3 backend and write a wrapper
 import theano.tensor as t  # for the wrapper to a custom model to pymc3
 import time
+from tqdm.autonotebook import tqdm
 import warnings
 
 np.seterr('warn')
@@ -448,8 +450,6 @@ num_of_trajectories = 20
 parameter_values = ee_sample(problem_info, grid_level, num_of_trajectories, local_optimization=False, seed=seed)
 
 # +
-from tqdm import tqdm
-
 t0 = aphid_data.Time.values.min()
 tf = aphid_data.Time.values.max()
 days_to_forecast = 0
@@ -1783,7 +1783,7 @@ with fine_model_LLV:
     step = pm.MLDA(coarse_models=[coarse_model_LLV], subsampling_rates=[5])
 #     step = pm.DEMetropolisZ()
     trace_calibration_LLV = pm.sample(draws=4500, chains=4, cores=4, tune=1000, step=step, random_seed=seed)
-    
+    Ge
 duration = time.time() - start_time
 
 print(f"-- Monte Carlo simulations done in {duration / 60:.3f} minutes")
@@ -1917,6 +1917,8 @@ print(f"-- Exported done in {duration:.3f} seconds")
 df_realizations
 
 # # Model comparison/selection
+
+# ## From PyMC3
 #
 # Check [this example](https://docs.pymc.io/pymc-examples/examples/diagnostics_and_criticism/model_comparison.html) for further information.
 #
@@ -1950,6 +1952,257 @@ df_model_comparison
 az.plot_compare(df_model_comparison, figsize=(12, 4), insample_dev=False)
 
 plt.show()
+
+
+# -
+
+# ## Custom (and basic) information criteria
+#
+# The criteria employed here are:
+#
+# * AIC -- Akaike Information Criterion
+# * BIC -- Bayesian Information Criterion
+#
+# Both ICs are based on the residual of least squares. This approach has as hypothesis that the error residuals, i.e., $\sum_{i = 1}^n (y^{\text{obs}}_i - y^{\text{model}}_i)^2$, are independent identical normal, with zero mean.
+#
+# An auxiliary quantity is defined in order to compare the models (relative to the best one):
+#
+# \begin{equation}
+# \mathcal{L}^{\text{rel}}_i := \exp{\left(\frac{\text{IC}_{\text{min}} - \text{IC}_i}{2}\right)}
+# \end{equation}
+#
+# where $\text{IC}_i$ is the information criterion value (it can be AIC or BIC) for the $i$th model, and $\text{IC}_{\text{min}}$ is the minimum (i.e., the best model) information criterion value from the set of compared models.
+#
+# This auxiliary quantity is known as "relative likelihood". It is proportional to the probability that the $i$th model minimizes the information loss. For the best model, this value will be always equal to 1.
+
+# +
+def calculate_aic_score(trace, rv_model_name, num_of_parameters, observations):
+    u_observed, v_observed = observations.T
+    k = num_of_parameters
+    n = observations.shape[0]
+    aic_scores = list()
+    progress_bar = tqdm(trace[rv_model_name])
+    for model_realization in progress_bar:
+        progress_bar.set_description(f"Calculating AIC for {rv_model_name}")
+        u_realization, v_realization = model_realization.T
+        u_realization_residual = u_observed - u_realization
+        v_realization_residual = v_observed - v_realization
+        u_residual_sum_of_squares = np.sum(u_realization_residual * u_realization_residual)
+        v_residual_sum_of_squares = np.sum(v_realization_residual * v_realization_residual)
+        total_residual_sum_of_squares = u_residual_sum_of_squares + v_residual_sum_of_squares
+        
+        # Information criterion in terms of least-squares error residuals
+        realization_aic_score = 2 * k + n * np.log(total_residual_sum_of_squares)
+        aic_scores.append(realization_aic_score)
+
+    aic_scores = np.array(aic_scores)
+    return aic_scores
+
+
+def calculate_bic_score(trace, rv_model_name, num_of_parameters, observations):
+    u_observed, v_observed = observations.T
+    k = num_of_parameters
+    n = observations.shape[0]
+    bic_scores = list()
+    progress_bar = tqdm(trace[rv_model_name])
+    for model_realization in progress_bar:
+        progress_bar.set_description(f"Calculating BIC for {rv_model_name}")
+        u_realization, v_realization = model_realization.T
+        u_realization_residual = u_observed - u_realization
+        v_realization_residual = v_observed - v_realization
+        u_residual_sum_of_squares = np.sum(u_realization_residual * u_realization_residual)
+        v_residual_sum_of_squares = np.sum(v_realization_residual * v_realization_residual)
+        total_residual_sum_of_squares = u_residual_sum_of_squares + v_residual_sum_of_squares
+        
+        # Information criterion in terms of least-squares error residuals
+        realization_bic_score = k * np.log(n) + n * np.log(total_residual_sum_of_squares / n)
+        bic_scores.append(realization_bic_score)
+
+    bic_scores = np.array(bic_scores)
+    return bic_scores
+
+
+# -
+
+aic_scores = calculate_aic_score(trace_calibration, 'BKM_model', 5, observations_to_fit)
+aic_mpv = _scalar_rv_mvp_estimation(aic_scores)
+
+# +
+plt.hist(aic_scores, bins=30)
+plt.axvline(x=aic_mpv, color='red', linestyle='--')
+plt.xlabel("AIC score")
+plt.ylabel("Frequency")
+
+plt.show()
+# -
+
+bic_scores = calculate_bic_score(trace_calibration, 'BKM_model', 5, observations_to_fit)
+bic_mpv = _scalar_rv_mvp_estimation(bic_scores)
+
+# +
+plt.hist(bic_scores, bins=30)
+plt.axvline(bic_mpv, color='red', linestyle='--')
+plt.xlabel("BIC score")
+plt.ylabel("Frequency")
+
+plt.show()
+
+
+# -
+
+# Now we define convenient functions to compare models according to the ICs.
+
+# +
+def compare_aic(
+    models_to_compare: dict, 
+    models_num_of_parameters: dict, 
+    observations: np.ndarray
+) -> pd.DataFrame:
+    compare_result = {
+        'model': list(),
+        'AIC': list(),
+    }
+    for model_name in models_to_compare:
+        model_trace = models_to_compare[model_name]
+        model_num_of_parameters = models_num_of_parameters[model_name]
+        model_aic_scores = calculate_aic_score(
+            model_trace, 
+            model_name, 
+            model_num_of_parameters, 
+            observations
+        )
+        model_aic_mpv = _scalar_rv_mvp_estimation(model_aic_scores)
+        compare_result['model'].append(model_name)
+        compare_result['AIC'].append(model_aic_mpv)
+    
+    df_compare_results = pd.DataFrame(compare_result)
+    df_compare_results.set_index('model', inplace=True)
+    df_compare_results.sort_values(by=['AIC'], ascending=True, inplace=True)
+    return df_compare_results
+
+
+def compare_bic(
+    models_to_compare: dict, 
+    models_num_of_parameters: dict, 
+    observations: np.ndarray
+) -> pd.DataFrame:
+    compare_result = {
+        'model': list(),
+        'BIC': list(),
+    }
+    for model_name in models_to_compare:
+        model_trace = models_to_compare[model_name]
+        model_num_of_parameters = models_num_of_parameters[model_name]
+        model_bic_scores = calculate_bic_score(
+            model_trace, 
+            model_name, 
+            model_num_of_parameters, 
+            observations
+        )
+        model_bic_mpv = _scalar_rv_mvp_estimation(model_bic_scores)
+        compare_result['model'].append(model_name)
+        compare_result['BIC'].append(model_bic_mpv)
+    
+    df_compare_results = pd.DataFrame(compare_result)
+    df_compare_results.set_index('model', inplace=True)
+    df_compare_results.sort_values(by=['BIC'], ascending=True, inplace=True)
+    return df_compare_results
+
+
+def compare_ic(
+    models_to_compare: dict, 
+    models_num_of_parameters: dict, 
+    observations: np.ndarray,
+    ic_to_sort: str = 'AIC'
+) -> pd.DataFrame:
+    # Dict to store results
+    compare_result = {
+        'model': list(),
+        'AIC': list(),
+        'BIC': list(),
+    }
+    
+    # Calculate Information Criteria
+    for model_name in models_to_compare:
+        compare_result['model'].append(model_name)
+        model_trace = models_to_compare[model_name]
+        model_num_of_parameters = models_num_of_parameters[model_name]
+        
+        # Compute AIC score
+        model_aic_scores = calculate_aic_score(
+            model_trace, 
+            model_name, 
+            model_num_of_parameters, 
+            observations
+        )
+        model_aic_mpv = _scalar_rv_mvp_estimation(model_aic_scores)
+        compare_result['AIC'].append(model_aic_mpv)
+        
+        # Compute BIC score
+        model_bic_scores = calculate_bic_score(
+            model_trace, 
+            model_name, 
+            model_num_of_parameters, 
+            observations
+        )
+        model_bic_mpv = _scalar_rv_mvp_estimation(model_bic_scores)
+        compare_result['BIC'].append(model_bic_mpv)
+        
+    # Gathering results in a DataFrame
+    df_compare_results = pd.DataFrame(compare_result)
+    
+    # Calculate relative likelihoods
+    available_ICs = ['AIC', 'BIC']
+    for ic in available_ICs:
+        ic_array = np.array(compare_result[ic])
+        min_ic_value = ic_array.min()
+        ic_relative_likelihoods = np.exp((min_ic_value - ic_array) / 2)
+        df_compare_results[f'relative_likelihood_{ic}'] = ic_relative_likelihoods
+            
+    df_compare_results.set_index('model', inplace=True)
+    df_compare_results.sort_values(by=[ic_to_sort], ascending=True, inplace=True)
+    return df_compare_results
+
+
+# +
+models_to_compare = {
+    # Model names have to be the same as used in PyMC3 sampling
+    "BKM_model": trace_calibration,
+    "LLV_model": trace_calibration_LLV,
+}
+
+# Num of calibrated parameters for each model
+models_num_of_parameters = {
+    # Model names have to be the same as used in PyMC3 sampling
+    "BKM_model": 5,  # r1, p, i, std_1, std_2
+    "LLV_model": 5,  # a, ef, m, std_1, std_2
+}
+
+df_compare_aic = compare_aic(
+    models_to_compare,
+    models_num_of_parameters,
+    observations_to_fit
+)
+
+df_compare_aic
+
+# +
+df_compare_bic = compare_bic(
+    models_to_compare,
+    models_num_of_parameters,
+    observations_to_fit
+)
+
+df_compare_bic
+
+# +
+df_compare_ic = compare_ic(
+    models_to_compare,
+    models_num_of_parameters,
+    observations_to_fit
+)
+
+df_compare_ic
 # -
 
 # # Uncertainty propagation
@@ -1962,7 +2215,8 @@ tf = aphid_data.Time.values.max()
 time_to_forecast = 250
 time_range_prediction = np.linspace(t0, tf + time_to_forecast, 100)
 
-with fine_model:
+fine_model_to_forecast = copy.deepcopy(fine_model)
+with fine_model_to_forecast:
     # We update the Data container "years"
     pm.set_data({"time": time_range_prediction})
 
@@ -2007,7 +2261,8 @@ plt.show()
 
 # ## LLV model
 
-with fine_model_LLV:
+fine_model_to_forecast_LLV = copy.deepcopy(fine_model_LLV)
+with fine_model_to_forecast_LLV:
     # We update the Data container "years"
     pm.set_data({"time": time_range_prediction})
 
