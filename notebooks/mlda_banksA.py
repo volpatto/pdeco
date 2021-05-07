@@ -1783,7 +1783,7 @@ with fine_model_LLV:
     step = pm.MLDA(coarse_models=[coarse_model_LLV], subsampling_rates=[5])
 #     step = pm.DEMetropolisZ()
     trace_calibration_LLV = pm.sample(draws=4500, chains=4, cores=4, tune=1000, step=step, random_seed=seed)
-    Ge
+    
 duration = time.time() - start_time
 
 print(f"-- Monte Carlo simulations done in {duration / 60:.3f} minutes")
@@ -1999,6 +1999,31 @@ def calculate_aic_score(trace, rv_model_name, num_of_parameters, observations):
     return aic_scores
 
 
+def calculate_aicc_score(trace, rv_model_name, num_of_parameters, observations):
+    u_observed, v_observed = observations.T
+    k = num_of_parameters
+    n = observations.shape[0]
+    aic_scores = list()
+    progress_bar = tqdm(trace[rv_model_name])
+    for model_realization in progress_bar:
+        progress_bar.set_description(f"Calculating AICc for {rv_model_name}")
+        u_realization, v_realization = model_realization.T
+        u_realization_residual = u_observed - u_realization
+        v_realization_residual = v_observed - v_realization
+        u_residual_sum_of_squares = np.sum(u_realization_residual * u_realization_residual)
+        v_residual_sum_of_squares = np.sum(v_realization_residual * v_realization_residual)
+        total_residual_sum_of_squares = u_residual_sum_of_squares + v_residual_sum_of_squares
+        
+        # Information criterion in terms of least-squares error residuals
+        realization_aic_score = 2 * k + n * np.log(total_residual_sum_of_squares)
+        realization_aic_score += 2 * (k * k + k) / (n - k - 1)
+        aic_scores.append(realization_aic_score)
+
+    aic_scores = np.array(aic_scores)
+    return aic_scores
+
+
+
 def calculate_bic_score(trace, rv_model_name, num_of_parameters, observations):
     u_observed, v_observed = observations.T
     k = num_of_parameters
@@ -2031,6 +2056,18 @@ aic_mpv = _scalar_rv_mvp_estimation(aic_scores)
 plt.hist(aic_scores, bins=30)
 plt.axvline(x=aic_mpv, color='red', linestyle='--')
 plt.xlabel("AIC score")
+plt.ylabel("Frequency")
+
+plt.show()
+# -
+
+aicc_scores = calculate_aicc_score(trace_calibration, 'BKM_model', 5, observations_to_fit)
+aicc_mpv = _scalar_rv_mvp_estimation(aicc_scores)
+
+# +
+plt.hist(aicc_scores, bins=30)
+plt.axvline(x=aicc_mpv, color='red', linestyle='--')
+plt.xlabel("AICc score")
 plt.ylabel("Frequency")
 
 plt.show()
@@ -2081,6 +2118,34 @@ def compare_aic(
     return df_compare_results
 
 
+def compare_aicc(
+    models_to_compare: dict, 
+    models_num_of_parameters: dict, 
+    observations: np.ndarray
+) -> pd.DataFrame:
+    compare_result = {
+        'model': list(),
+        'AICc': list(),
+    }
+    for model_name in models_to_compare:
+        model_trace = models_to_compare[model_name]
+        model_num_of_parameters = models_num_of_parameters[model_name]
+        model_aicc_scores = calculate_aicc_score(
+            model_trace, 
+            model_name, 
+            model_num_of_parameters, 
+            observations
+        )
+        model_aicc_mpv = _scalar_rv_mvp_estimation(model_aicc_scores)
+        compare_result['model'].append(model_name)
+        compare_result['AICc'].append(model_aicc_mpv)
+    
+    df_compare_results = pd.DataFrame(compare_result)
+    df_compare_results.set_index('model', inplace=True)
+    df_compare_results.sort_values(by=['AICc'], ascending=True, inplace=True)
+    return df_compare_results
+
+
 def compare_bic(
     models_to_compare: dict, 
     models_num_of_parameters: dict, 
@@ -2119,6 +2184,7 @@ def compare_ic(
     compare_result = {
         'model': list(),
         'AIC': list(),
+        'AICc': list(),
         'BIC': list(),
     }
     
@@ -2138,6 +2204,16 @@ def compare_ic(
         model_aic_mpv = _scalar_rv_mvp_estimation(model_aic_scores)
         compare_result['AIC'].append(model_aic_mpv)
         
+        # Compute AICc score
+        model_aicc_scores = calculate_aicc_score(
+            model_trace, 
+            model_name, 
+            model_num_of_parameters, 
+            observations
+        )
+        model_aicc_mpv = _scalar_rv_mvp_estimation(model_aicc_scores)
+        compare_result['AICc'].append(model_aicc_mpv)
+        
         # Compute BIC score
         model_bic_scores = calculate_bic_score(
             model_trace, 
@@ -2152,12 +2228,12 @@ def compare_ic(
     df_compare_results = pd.DataFrame(compare_result)
     
     # Calculate relative likelihoods
-    available_ICs = ['AIC', 'BIC']
+    available_ICs = ['AIC', 'AICc', 'BIC']
     for ic in available_ICs:
         ic_array = np.array(compare_result[ic])
         min_ic_value = ic_array.min()
         ic_relative_likelihoods = np.exp((min_ic_value - ic_array) / 2)
-        df_compare_results[f'relative_likelihood_{ic}'] = ic_relative_likelihoods
+        df_compare_results[f'weight_{ic}'] = ic_relative_likelihoods
             
     df_compare_results.set_index('model', inplace=True)
     df_compare_results.sort_values(by=[ic_to_sort], ascending=True, inplace=True)
@@ -2203,6 +2279,24 @@ df_compare_ic = compare_ic(
 )
 
 df_compare_ic
+# -
+
+df_ic_values = df_compare_ic[['AIC', 'AICc', 'BIC']].T
+df_ic_weights = df_compare_ic[['weight_AIC', 'weight_AICc', 'weight_BIC']].T
+
+# +
+ax = df_ic_values.plot.bar(figsize=(8, 6), rot=0)
+
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.1), ncol=2)
+
+plt.show()
+
+# +
+ax = df_ic_weights.plot.bar(figsize=(8, 6), rot=0)
+
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.1), ncol=2)
+
+plt.show()
 # -
 
 # # Uncertainty propagation
