@@ -6,7 +6,9 @@ Try it out in your browser: [![Binder](https://mybinder.org/badge_logo.svg)](htt
 
 ## What is it?
 
-This repo constains studies of population dynamics considering both functional responses as well as diffusion effects for Prey-Predator system composed of Aphids and Ladybeetles. [This paper by Banks et al.](https://dx.doi.org/10.1007/BF00378930) and the paper of [Lin and Pennings](https://dx.doi.org/10.1002/ece3.4117) are our main references.
+This repo constains studies of population dynamics considering both functional responses as well as diffusion effects for Prey-Predator system composed of Aphids and 
+Ladybeetles. [This paper by Banks et al.](https://dx.doi.org/10.1007/BF00378930) and the paper of [Lin and Pennings](https://dx.doi.org/10.1002/ece3.4117) are our main 
+references.
 
 ## How is the mathematical model?
 
