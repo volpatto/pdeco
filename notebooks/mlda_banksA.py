@@ -1,22 +1,11 @@
-# -*- coding: utf-8 -*-
-# ---
-# jupyter:
-#   jupytext:
-#     formats: ipynb,py:light
-#     text_representation:
-#       extension: .py
-#       format_name: light
-#       format_version: '1.5'
-#       jupytext_version: 1.6.0
-#   kernelspec:
-#     display_name: Python 3
-#     language: python
-#     name: python3
-# ---
+#!/usr/bin/env python
+# coding: utf-8
 
 # # Aphid-Ladybeetle study
 
-# +
+# In[1]:
+
+
 import copy
 import numpy as np  # linear algebra
 from numba import jit
@@ -41,53 +30,68 @@ Numba.enable_numba()
 
 seed = 1234
 np.random.seed(seed)
-# -
+
 
 # ## Obtaining Initial Conditions
-#
+# 
 # We need to define Initial Conditions as functions in order to define them for each discretization point. Here we will fit ICs as polynomial functions.
 
 # Loading data:
 
-# ### 1987_Banks_et_al
+# ### Data Lin and Pennings 2018 (https://dx.doi.org/10.1002/ece3.4117)
 
-# data_dir = "../data/aphid_ladybird/1987_Banks_et_al/"
-# aphid_data = pd.read_excel(data_dir + 'aphid.xls')
-# ladybeetle_data = pd.read_excel(data_dir + 'ladybeetle.xls')
-
-# ### 2014_Messelink
+# In[2]:
 
 
-
-# ### 2017_Lin_and_Pennings
-
-data_dir = "../data/2017 Lin and Pennings/appendix/"
+data_dir = "../data/2018 Lin and Pennings/appendix/"
 aphid_data = pd.read_csv(data_dir + 'aphid.CSV')
 ladybeetle_data = pd.read_csv(data_dir + 'ladybeetle.CSV')
 
-# ### 2018_Beltra_et_al
 
+# In[3]:
 
 
 aphid_data
 
+
+# In[4]:
+
+
 ladybeetle_data
 
+
 # Retrieving IC data:
+
+# In[5]:
+
 
 aphid_ic = aphid_data[aphid_data.Time == 1].Density.values[0]
 ladybeetle_ic = ladybeetle_data[ladybeetle_data.Time == 1].Density.values[0]
 
+
+# In[6]:
+
+
 aphid_ic
+
+
+# In[7]:
+
 
 ladybeetle_ic
 
-# +
+
+# In[8]:
+
+
 y0_BKM = aphid_ic, ladybeetle_ic
 
 y0_BKM
 
-# +
+
+# In[9]:
+
+
 import matplotlib.pyplot as plt
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 6))
@@ -97,11 +101,13 @@ ax1.set(xlabel='Time', ylabel='Population')
 ax2.plot(ladybeetle_data.Time.values, ladybeetle_data.Density.values, '-o', c='b')
 ax2.set(xlabel='Time')
 plt.show()
-# -
+
 
 # # Prey-Predator Banks-Kareiva-Murphy A model
 
-# +
+# In[10]:
+
+
 import matplotlib.pyplot as plt
 from numba import jit
 import numpy as np  # linear algebra
@@ -121,7 +127,7 @@ def BKM_model(
     e3 = 0.009,
 ):
     """
-    Prey-Predator Banks-Kareiva-Murphy A model (BKM) python implementation.
+    Prey-Predator Banks-Kareiva-Murphy A model (BKM) python implementation
     """
     u, v = X
     u_prime = r1 * u - r2 * u * u - p * u * v
@@ -150,29 +156,22 @@ def BKM_ode_solver(
     )
     return solution_ODE
 
-# Testing
-#y0_BKM = 1000, 10
 t0 = aphid_data.Time.values.min()
 tf = aphid_data.Time.values.max()
 t0 = 0
 tf = 60
 days_to_forecast = 0
-#time_range = np.linspace(t0, tf + days_to_forecast, tf)
 time_range = np.linspace(t0, tf + days_to_forecast, len(aphid_data.Time.values))
-
-#solution_ODE_BKM = BKM_ode_solver(y0_BKM,(t0, tf + days_to_forecast),time_range,r1=84.3076043709435,r2=3.6171452070781938e-09,p=8.42165671556821,i=0.02313343678899621,e1=5.2382389737075074e-08,e2=0.0024303746376647104,e3=4.9340194538713404e-05)
-#t_computed_BKM, y_computed_BKM = solution_ODE_BKM.t, solution_ODE_BKM.y
-#aphid_analytic, ladybeetle_analytic = y_computed_BKM
 
 u_data = aphid_data.Density.values
 v_data = ladybeetle_data.Density.values
 
 
-# -
-
 # * We now need to calibrate the parameters of the function. Firstly, we have to define a least-squares residual error function:
 
-# +
+# In[11]:
+
+
 def BKM_least_squares_error_ode(
     par, time_exp, f_exp, fitting_model, initial_conditions
 ):
@@ -210,23 +209,22 @@ def callback_de(xk, convergence):
     print(f'parameters = {xk}\n')
 
 
-# -
-
 # * Now we calibrate minimizing the residual applying the Differential Evolution method, a global optimization method, provided by `scipy`:
 
-# +
+# In[12]:
+
+
 from scipy import optimize
 
-r1=46.32166847737433
-r2=9.533324619539296e-09
-p=6.506856453951996
-i=0.03097896528819232
-e1=6.774786031845174e-08
-e2=0.004623799343568372
-e3=5.1998548164782127e-05
-
-denom_min = 0.7
-denom_max = 1.3
+r1=53.87718908763653
+r2=1.1578576537297135e-08
+p=6.653498501486328
+i=0.030681579859928036
+e1=7.600424058336915e-08
+e2=0.005151067737584555
+e3=5.6463091579443205e-05
+denom_min = 0.1
+denom_max = 1.9
 bounds_BKM = [
     ( ( r1 * denom_min ), ( r1 * denom_max ) ),  # r1
     ( ( r2 * denom_min ), ( r2 * denom_max ) ),  # r2
@@ -260,11 +258,13 @@ result_BKM = optimize.differential_evolution(
 )
 
 print(result_BKM)
-# -
+
 
 # * Retrieving the calibrated parameter values:
 
-# +
+# In[13]:
+
+
 t0 = aphid_data.Time.values.min()
 tf = aphid_data.Time.values.max()
 days_to_forecast = 0
@@ -305,11 +305,13 @@ print("r1=" + str(r1) + "\n" + "r2=" + str(r2) + "\n" + "p=" + str(p) + "\n" + "
 
 df_parameters_calibrated = pd.DataFrame.from_records([parameters_dict])
 #print(df_parameters_calibrated.to_latex(index=False))
-# -
+
 
 # #### Simulation
 
-# +
+# In[14]:
+
+
 import matplotlib.pyplot as plt
 
 aphid_observed = aphid_data[:].copy()
@@ -327,13 +329,15 @@ plt.plot(ladybeetle_data.Time.values, ladybeetle_observed.Density.values, 'o', l
 plt.xlabel('Time')
 plt.ylabel('Ladybeetle population')
 plt.show()
-# -
+
 
 # ## Sensitivity Analyses
 
 # ### Least-Squares objective function
 
-# +
+# In[15]:
+
+
 from SALib.sample.morris import sample as ee_sample
 
 mean_values_params = [
@@ -365,7 +369,10 @@ grid_level = 4
 num_of_trajectories = 20
 parameter_values = ee_sample(problem_info, grid_level, num_of_trajectories, local_optimization=False, seed=seed)
 
-# +
+
+# In[16]:
+
+
 from tqdm import tqdm
 
 num_of_realizations = parameter_values.shape[0]
@@ -383,7 +390,10 @@ for realization_index, parameters_realization in tqdm(enumerate(parameter_values
     
     qoi_sensitivity_outputs[realization_index] = residual_least_squares_result
 
-# +
+
+# In[17]:
+
+
 from SALib.analyze.morris import analyze as ee_analyze
 
 data_time = aphid_data.Time.values
@@ -401,7 +411,10 @@ df_Si.rename(columns={0: r'$\mu^*$'}, inplace=True)
 df_Si.sort_values(by=r'$\mu^*$', ascending=False, inplace=True)
 df_Si
 
-# +
+
+# In[18]:
+
+
 df_Si.T.plot.bar(rot=0, width=3, figsize=(9, 6))
 
 plt.rcParams.update({'font.size': 16})
@@ -413,11 +426,13 @@ plt.legend(fancybox=True, shadow=True)
 plt.tight_layout()
 plt.savefig("sensitivity_least_squares.png", dpi=300)
 plt.show()
-# -
+
 
 # ### Prey (pest) population
 
-# +
+# In[19]:
+
+
 from SALib.sample.morris import sample as ee_sample
 
 mean_values_params = [
@@ -449,7 +464,10 @@ grid_level = 4
 num_of_trajectories = 20
 parameter_values = ee_sample(problem_info, grid_level, num_of_trajectories, local_optimization=False, seed=seed)
 
-# +
+
+# In[20]:
+
+
 t0 = aphid_data.Time.values.min()
 tf = aphid_data.Time.values.max()
 days_to_forecast = 0
@@ -472,7 +490,10 @@ for realization_index, parameters_realization in tqdm(enumerate(parameter_values
     
     qoi_sensitivity_outputs[realization_index, :] = u_realization
 
-# +
+
+# In[21]:
+
+
 from SALib.analyze.morris import analyze as ee_analyze
 
 df_Si = pd.DataFrame(columns=['Time', *problem_info['names']])
@@ -508,11 +529,17 @@ df_sigmai.reset_index(drop=True, inplace=True)
 
 valid_times = df_Si.Time.values
 df_Si
-# -
+
+
+# In[22]:
+
 
 df_sigmai
 
-# +
+
+# In[23]:
+
+
 fig = plt.figure()
 ax = plt.subplot(111)
 step_to_plot = 2
@@ -528,7 +555,10 @@ plt.tight_layout()
 plt.savefig("SA_pest_pop.png", dpi=300)
 plt.show()
 
-# +
+
+# In[24]:
+
+
 fig = plt.figure()
 ax = plt.subplot(111)
 step_to_plot = 2
@@ -545,9 +575,10 @@ plt.savefig("SA_pest_pop_sigma.png", dpi=300)
 plt.show()
 
 
-# -
-
 # ### Time-derivative of pest (prey) population
+
+# In[25]:
+
 
 def calculate_pest_time_derivative_series(
     time_array, 
@@ -568,7 +599,9 @@ def calculate_pest_time_derivative_series(
     return pest_time_derivative_array
 
 
-# +
+# In[26]:
+
+
 pest_time_derivative_array = calculate_pest_time_derivative_series(
     t_computed_BKM,
     u_BKM,
@@ -579,7 +612,10 @@ pest_time_derivative_array = calculate_pest_time_derivative_series(
 
 pest_time_derivative_array
 
-# +
+
+# In[27]:
+
+
 plt.figure(figsize=(9, 7))
 
 plt.plot(t_computed_BKM, u_BKM, '-x', label='Pest population')
@@ -594,7 +630,10 @@ plt.legend(shadow=True)
 plt.savefig("pest_derivative.png", dpi=300)
 plt.show()
 
-# +
+
+# In[28]:
+
+
 mean_values_params = [
     r1,
     r2,
@@ -624,7 +663,10 @@ grid_level = 4
 num_of_trajectories = 20
 parameter_values = ee_sample(problem_info, grid_level, num_of_trajectories, local_optimization=False, seed=seed)
 
-# +
+
+# In[29]:
+
+
 t0 = aphid_data.Time.values.min()
 tf = aphid_data.Time.values.max()
 days_to_forecast = 0
@@ -655,7 +697,10 @@ for realization_index, parameters_realization in tqdm(enumerate(parameter_values
     
     qoi_sensitivity_outputs[realization_index, :] = pest_time_derivative_array
 
-# +
+
+# In[30]:
+
+
 df_Si = pd.DataFrame(columns=['Time', *problem_info['names']])
 df_sigmai = pd.DataFrame(columns=['Time', *problem_info['names']])
 df_Si['Time'] = time_range
@@ -689,11 +734,17 @@ df_sigmai.reset_index(drop=True, inplace=True)
 
 valid_times = df_Si.Time.values
 df_Si
-# -
+
+
+# In[31]:
+
 
 df_sigmai
 
-# +
+
+# In[32]:
+
+
 fig = plt.figure()
 ax = plt.subplot(111)
 step_to_plot = 2
@@ -709,7 +760,10 @@ plt.tight_layout()
 plt.savefig("SA_pest_pop_derivative.png", dpi=300)
 plt.show()
 
-# +
+
+# In[33]:
+
+
 fig = plt.figure()
 ax = plt.subplot(111)
 step_to_plot = 2
@@ -726,9 +780,10 @@ plt.savefig("SA_pest_pop_sigma_derivative.png", dpi=300)
 plt.show()
 
 
-# -
-
 # ## Bayesian calibration
+
+# In[34]:
+
 
 @theano.compile.ops.as_op(
     itypes=[
@@ -765,7 +820,11 @@ def BKM_ode_wrapper(time_exp, r1, r2, p, i, e1, e2, e3, u0, v0):
     concatenate_simulated_qoi = np.vstack([simulated_qoi1, simulated_qoi2]).T
 
     return concatenate_simulated_qoi
-# +
+
+
+# In[ ]:
+
+
 observed_aphids = aphid_observed.Density.values.astype(np.float64)
 observed_ladybeetles = ladybeetle_observed.Density.values.astype(np.float64)
 observations_to_fit = np.vstack([observed_aphids, observed_ladybeetles]).T  # note the transpose here
@@ -976,11 +1035,17 @@ with fine_model:
 duration = time.time() - start_time
 
 print(f"-- Monte Carlo simulations done in {duration / 60:.3f} minutes")
-# -
+
+
+# In[ ]:
 
 
 plt.hist(trace_calibration['r1'], bins=35)
 plt.show()
+
+
+# In[ ]:
+
 
 calibration_variable_names = [
     "std_deviation",
@@ -988,6 +1053,10 @@ calibration_variable_names = [
     "p",
     "i"
 ]
+
+
+# In[ ]:
+
 
 plot_step = 1
 progress_bar = tqdm(calibration_variable_names)
@@ -1001,6 +1070,10 @@ for variable in progress_bar:
     )
     plt.savefig(f"{variable}_posterior_cal.png")
 
+
+# In[ ]:
+
+
 az.plot_pair(
     trace_calibration,
     var_names=calibration_variable_names,
@@ -1011,7 +1084,10 @@ az.plot_pair(
 )
 plt.savefig("marginals_cal.png")
 
-# +
+
+# In[ ]:
+
+
 df_stats_summary = az.summary(
     data=trace_calibration,
     var_names=calibration_variable_names,
@@ -1020,11 +1096,13 @@ df_stats_summary = az.summary(
 )
 
 df_stats_summary
-# -
+
 
 # Auxiliary functions to compute the Most Probable Value (MPV):
 
-# +
+# In[ ]:
+
+
 from scipy.stats import gaussian_kde  # to calculate MPV from KDE
 
 def _scalar_rv_mvp_estimation(rv_realization_values: np.ndarray) -> np.ndarray:
@@ -1074,7 +1152,9 @@ def add_mpv_to_summary(arviz_summary: pd.DataFrame, rv_modes_dict: dict) -> pd.D
     return new_arviz_summary
 
 
-# +
+# In[ ]:
+
+
 calibration_variable_mpv = calculate_rv_posterior_mpv(
     pm_trace=trace_calibration, variable_names=calibration_variable_names
 )
@@ -1083,14 +1163,20 @@ df_stats_summary.to_csv("stats_summary_calibration.csv")  # salvando em um csv p
 
 df_stats_summary
 
-# +
+
+# In[ ]:
+
+
 percentile_cut = 2.5
 
 y_min = np.percentile(trace_calibration["BKM_model"], percentile_cut, axis=0)
 y_max = np.percentile(trace_calibration["BKM_model"], 100 - percentile_cut, axis=0)
 y_fit = np.percentile(trace_calibration["BKM_model"], 50, axis=0)
 
-# +
+
+# In[ ]:
+
+
 plt.figure(figsize=(15, 5))
 
 plt.plot(
@@ -1140,7 +1226,10 @@ plt.tight_layout()
 plt.savefig("calibration.png", dpi=300)
 plt.show()
 
-# +
+
+# In[ ]:
+
+
 print("-- Exporting calibrated parameter to CSV")
 
 start_time = time.time()
@@ -1158,14 +1247,19 @@ df_realizations.to_csv("calibration_realizations.csv")
 duration = time.time() - start_time
 
 print(f"-- Exported done in {duration:.3f} seconds")
-# -
+
+
+# In[ ]:
+
 
 df_realizations
 
 
 # # Prey-Predator logistic Lotka-Volterra
 
-# +
+# In[ ]:
+
+
 @jit(nopython=True)
 def LLV_model(
     t,
@@ -1205,9 +1299,10 @@ def LLV_ode_solver(
     return solution_ODE
 
 
-# -
-
 # ## Deterministic calibration
+
+# In[ ]:
+
 
 def LLV_least_squares_error_ode(
     par, time_exp, f_exp, fitting_model, initial_conditions
@@ -1239,7 +1334,9 @@ def LLV_least_squares_error_ode(
     return objective_function
 
 
-# +
+# In[ ]:
+
+
 def callback_de(xk, convergence):
     """
     This function is to show the optimization procedure progress.
@@ -1277,11 +1374,17 @@ result_LLV = optimize.differential_evolution(
 )
 
 print(result_LLV)
-# -
+
+
+# In[ ]:
+
 
 result_LLV.x
 
-# +
+
+# In[ ]:
+
+
 t0 = aphid_data.Time.values.min()
 tf = aphid_data.Time.values.max()
 days_to_forecast = 0
@@ -1315,7 +1418,10 @@ parameters_dict = {
 df_parameters_calibrated = pd.DataFrame.from_records([parameters_dict])
 print(df_parameters_calibrated.to_latex(index=False))
 
-# +
+
+# In[ ]:
+
+
 plt.plot(t_computed_LLV, u_LLV, '-x')
 plt.plot(aphid_data.Time.values, aphid_observed.Density.values, 'o', label='Observed')
 
@@ -1328,13 +1434,15 @@ plt.plot(ladybeetle_data.Time.values, ladybeetle_observed.Density.values, 'o', l
 plt.xlabel('Time')
 plt.ylabel('Ladybeetle population')
 plt.show()
-# -
+
 
 # ## Sensitivity Analyses
 
 # ### SA on Least-Squares objective function
 
-# +
+# In[ ]:
+
+
 mean_values_params = [
     r_deterministic,
     K_deterministic,
@@ -1360,7 +1468,10 @@ grid_level = 4
 num_of_trajectories = 20
 parameter_values = ee_sample(problem_info, grid_level, num_of_trajectories, local_optimization=False, seed=seed)
 
-# +
+
+# In[ ]:
+
+
 num_of_realizations = parameter_values.shape[0]
 qoi_sensitivity_outputs = np.zeros(num_of_realizations)
 
@@ -1376,7 +1487,10 @@ for realization_index, parameters_realization in tqdm(enumerate(parameter_values
     
     qoi_sensitivity_outputs[realization_index] = residual_least_squares_result
 
-# +
+
+# In[ ]:
+
+
 data_time = aphid_data.Time.values
 num_of_experimental_points = data_time.shape[0]
 
@@ -1392,7 +1506,10 @@ df_Si.rename(columns={0: r'$\mu^*$'}, inplace=True)
 df_Si.sort_values(by=r'$\mu^*$', ascending=False, inplace=True)
 df_Si
 
-# +
+
+# In[ ]:
+
+
 df_Si.T.plot.bar(rot=0, width=3, figsize=(9, 6))
 
 plt.rcParams.update({'font.size': 16})
@@ -1404,11 +1521,13 @@ plt.legend(fancybox=True, shadow=True)
 plt.tight_layout()
 plt.savefig("sensitivity_least_squares_LLV.png", dpi=300)
 plt.show()
-# -
+
 
 # ### SA on pest population
 
-# +
+# In[ ]:
+
+
 t0 = aphid_data.Time.values.min()
 tf = aphid_data.Time.values.max()
 days_to_forecast = 0
@@ -1431,7 +1550,10 @@ for realization_index, parameters_realization in tqdm(enumerate(parameter_values
     
     qoi_sensitivity_outputs[realization_index, :] = u_realization
 
-# +
+
+# In[ ]:
+
+
 df_Si = pd.DataFrame(columns=['Time', *problem_info['names']])
 df_sigmai = pd.DataFrame(columns=['Time', *problem_info['names']])
 df_Si['Time'] = time_range
@@ -1465,11 +1587,17 @@ df_sigmai.reset_index(drop=True, inplace=True)
 
 valid_times = df_Si.Time.values
 df_Si
-# -
+
+
+# In[ ]:
+
 
 df_sigmai
 
-# +
+
+# In[ ]:
+
+
 fig = plt.figure()
 ax = plt.subplot(111)
 step_to_plot = 2
@@ -1485,7 +1613,10 @@ plt.tight_layout()
 plt.savefig("SA_pest_pop_LLV.png", dpi=300)
 plt.show()
 
-# +
+
+# In[ ]:
+
+
 fig = plt.figure()
 ax = plt.subplot(111)
 step_to_plot = 2
@@ -1500,11 +1631,13 @@ ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=len(problem_info[
 plt.tight_layout()
 plt.savefig("SA_pest_pop_sigma_LLV.png", dpi=300)
 plt.show()
-# -
+
 
 # ### SA on time-derivative pest population
 
-# +
+# In[ ]:
+
+
 pest_time_derivative_array = calculate_pest_time_derivative_series(
     t_computed_LLV,
     u_LLV,
@@ -1515,7 +1648,10 @@ pest_time_derivative_array = calculate_pest_time_derivative_series(
 
 pest_time_derivative_array
 
-# +
+
+# In[ ]:
+
+
 plt.figure(figsize=(9, 7))
 
 plt.plot(t_computed_LLV, u_LLV, '-x', label='Pest population')
@@ -1529,7 +1665,10 @@ plt.legend(shadow=True)
 
 plt.savefig("pest_derivative_LLV.png", dpi=300)
 plt.show()
-# -
+
+
+# In[ ]:
+
 
 for realization_index, parameters_realization in tqdm(enumerate(parameter_values), total=len(parameter_values)):
     
@@ -1552,7 +1691,10 @@ for realization_index, parameters_realization in tqdm(enumerate(parameter_values
     
     qoi_sensitivity_outputs[realization_index, :] = pest_time_derivative_array
 
-# +
+
+# In[ ]:
+
+
 df_Si = pd.DataFrame(columns=['Time', *problem_info['names']])
 df_sigmai = pd.DataFrame(columns=['Time', *problem_info['names']])
 df_Si['Time'] = time_range
@@ -1586,11 +1728,17 @@ df_sigmai.reset_index(drop=True, inplace=True)
 
 valid_times = df_Si.Time.values
 df_Si
-# -
+
+
+# In[ ]:
+
 
 df_sigmai
 
-# +
+
+# In[ ]:
+
+
 fig = plt.figure()
 ax = plt.subplot(111)
 step_to_plot = 2
@@ -1606,7 +1754,10 @@ plt.tight_layout()
 plt.savefig("SA_pest_pop_derivative_LLV.png", dpi=300)
 plt.show()
 
-# +
+
+# In[ ]:
+
+
 fig = plt.figure()
 ax = plt.subplot(111)
 step_to_plot = 2
@@ -1623,9 +1774,10 @@ plt.savefig("SA_pest_pop_sigma_derivative_LLV.png", dpi=300)
 plt.show()
 
 
-# -
-
 # ## Bayesian calibration
+
+# In[ ]:
+
 
 @theano.compile.ops.as_op(
     itypes=[
@@ -1662,7 +1814,9 @@ def LLV_ode_wrapper(time_exp, r, K, a, ef, m, u0, v0):
     return concatenate_simulated_qoi
 
 
-# +
+# In[ ]:
+
+
 observed_aphids_fine = aphid_observed.Density.values.astype(np.float64)
 observed_ladybeetles_fine = ladybeetle_observed.Density.values.astype(np.float64)
 observations_to_fit_fine = np.vstack([observed_aphids_fine, observed_ladybeetles_fine]).T
@@ -1787,7 +1941,10 @@ with fine_model_LLV:
 duration = time.time() - start_time
 
 print(f"-- Monte Carlo simulations done in {duration / 60:.3f} minutes")
-# -
+
+
+# In[ ]:
+
 
 calibration_variable_names = [
     "std_deviation",
@@ -1795,6 +1952,10 @@ calibration_variable_names = [
     "ef",
     "m",
 ]
+
+
+# In[ ]:
+
 
 plot_step = 1
 progress_bar = tqdm(calibration_variable_names)
@@ -1808,6 +1969,10 @@ for variable in progress_bar:
     )
     plt.savefig(f"{variable}_posterior_cal_LLV.png")
 
+
+# In[ ]:
+
+
 az.plot_pair(
     trace_calibration_LLV,
     var_names=calibration_variable_names,
@@ -1818,7 +1983,10 @@ az.plot_pair(
 )
 plt.savefig("marginals_cal_LLV.png")
 
-# +
+
+# In[ ]:
+
+
 df_stats_summary = az.summary(
     data=trace_calibration_LLV,
     var_names=calibration_variable_names,
@@ -1828,7 +1996,10 @@ df_stats_summary = az.summary(
 
 df_stats_summary
 
-# +
+
+# In[ ]:
+
+
 calibration_variable_mpv = calculate_rv_posterior_mpv(
     pm_trace=trace_calibration_LLV, variable_names=calibration_variable_names
 )
@@ -1837,14 +2008,20 @@ df_stats_summary.to_csv("stats_summary_calibration_LLV.csv")  # salvando em um c
 
 df_stats_summary
 
-# +
+
+# In[ ]:
+
+
 percentile_cut = 2.5
 
 y_min = np.percentile(trace_calibration_LLV["LLV_model"], percentile_cut, axis=0)
 y_max = np.percentile(trace_calibration_LLV["LLV_model"], 100 - percentile_cut, axis=0)
 y_fit = np.percentile(trace_calibration_LLV["LLV_model"], 50, axis=0)
 
-# +
+
+# In[ ]:
+
+
 plt.figure(figsize=(15, 5))
 
 plt.plot(
@@ -1894,7 +2071,10 @@ plt.tight_layout()
 plt.savefig("calibration_LLV.png", dpi=300)
 plt.show()
 
-# +
+
+# In[ ]:
+
+
 print("-- Exporting calibrated parameter to CSV")
 
 start_time = time.time()
@@ -1912,19 +2092,25 @@ df_realizations.to_csv("calibration_realizations_LLV.csv")
 duration = time.time() - start_time
 
 print(f"-- Exported done in {duration:.3f} seconds")
-# -
+
+
+# In[ ]:
+
 
 df_realizations
+
 
 # # Model comparison/selection
 
 # ## From PyMC3
-#
+# 
 # Check [this example](https://docs.pymc.io/pymc-examples/examples/diagnostics_and_criticism/model_comparison.html) for further information.
-#
+# 
 # TL;DR: The "score", which is "loo" or "waic" in the printed dataframe bellow, should the greatest for the best model. The `weight` is one of the most important information, because it loosely tell the probability of the model to be the "correct one" among all the compared models.
 
-# +
+# In[ ]:
+
+
 print("\n*** Performing model comparison ***")
 start_time = time.time()
 
@@ -1948,34 +2134,37 @@ print(f"-- Model comparison done in {duration / 60:.3f} minutes")
 
 df_model_comparison
 
-# +
+
+# In[ ]:
+
+
 az.plot_compare(df_model_comparison, figsize=(12, 4), insample_dev=False)
 
 plt.show()
 
 
-# -
-
 # ## Custom (and basic) information criteria
-#
+# 
 # The criteria employed here are:
-#
+# 
 # * AIC -- Akaike Information Criterion
 # * BIC -- Bayesian Information Criterion
-#
+# 
 # Both ICs are based on the residual of least squares. This approach has as hypothesis that the error residuals, i.e., $\sum_{i = 1}^n (y^{\text{obs}}_i - y^{\text{model}}_i)^2$, are independent identical normal, with zero mean.
-#
+# 
 # An auxiliary quantity is defined in order to compare the models (relative to the best one):
-#
+# 
 # \begin{equation}
 # \mathcal{L}^{\text{rel}}_i := \exp{\left(\frac{\text{IC}_{\text{min}} - \text{IC}_i}{2}\right)}
 # \end{equation}
-#
+# 
 # where $\text{IC}_i$ is the information criterion value (it can be AIC or BIC) for the $i$th model, and $\text{IC}_{\text{min}}$ is the minimum (i.e., the best model) information criterion value from the set of compared models.
-#
+# 
 # This auxiliary quantity is known as "relative likelihood". It is proportional to the probability that the $i$th model minimizes the information loss. For the best model, this value will be always equal to 1.
 
-# +
+# In[ ]:
+
+
 def calculate_aic_score(trace, rv_model_name, num_of_parameters, observations):
     u_observed, v_observed = observations.T
     k = num_of_parameters
@@ -2047,36 +2236,52 @@ def calculate_bic_score(trace, rv_model_name, num_of_parameters, observations):
     return bic_scores
 
 
-# -
+# In[ ]:
+
 
 aic_scores = calculate_aic_score(trace_calibration, 'BKM_model', 5, observations_to_fit)
 aic_mpv = _scalar_rv_mvp_estimation(aic_scores)
 
-# +
+
+# In[ ]:
+
+
 plt.hist(aic_scores, bins=30)
 plt.axvline(x=aic_mpv, color='red', linestyle='--')
 plt.xlabel("AIC score")
 plt.ylabel("Frequency")
 
 plt.show()
-# -
+
+
+# In[ ]:
+
 
 aicc_scores = calculate_aicc_score(trace_calibration, 'BKM_model', 5, observations_to_fit)
 aicc_mpv = _scalar_rv_mvp_estimation(aicc_scores)
 
-# +
+
+# In[ ]:
+
+
 plt.hist(aicc_scores, bins=30)
 plt.axvline(x=aicc_mpv, color='red', linestyle='--')
 plt.xlabel("AICc score")
 plt.ylabel("Frequency")
 
 plt.show()
-# -
+
+
+# In[ ]:
+
 
 bic_scores = calculate_bic_score(trace_calibration, 'BKM_model', 5, observations_to_fit)
 bic_mpv = _scalar_rv_mvp_estimation(bic_scores)
 
-# +
+
+# In[ ]:
+
+
 plt.hist(bic_scores, bins=30)
 plt.axvline(bic_mpv, color='red', linestyle='--')
 plt.xlabel("BIC score")
@@ -2085,11 +2290,11 @@ plt.ylabel("Frequency")
 plt.show()
 
 
-# -
-
 # Now we define convenient functions to compare models according to the ICs.
 
-# +
+# In[ ]:
+
+
 def compare_aic(
     models_to_compare: dict, 
     models_num_of_parameters: dict, 
@@ -2240,7 +2445,9 @@ def compare_ic(
     return df_compare_results
 
 
-# +
+# In[ ]:
+
+
 models_to_compare = {
     # Model names have to be the same as used in PyMC3 sampling
     "BKM_model": trace_calibration,
@@ -2262,7 +2469,10 @@ df_compare_aic = compare_aic(
 
 df_compare_aic
 
-# +
+
+# In[ ]:
+
+
 df_compare_bic = compare_bic(
     models_to_compare,
     models_num_of_parameters,
@@ -2271,7 +2481,10 @@ df_compare_bic = compare_bic(
 
 df_compare_bic
 
-# +
+
+# In[ ]:
+
+
 df_compare_ic = compare_ic(
     models_to_compare,
     models_num_of_parameters,
@@ -2279,31 +2492,42 @@ df_compare_ic = compare_ic(
 )
 
 df_compare_ic
-# -
+
+
+# In[ ]:
+
 
 df_ic_values = df_compare_ic[['AIC', 'AICc', 'BIC']].T
 df_ic_weights = df_compare_ic[['weight_AIC', 'weight_AICc', 'weight_BIC']].T
 
-# +
+
+# In[ ]:
+
+
 ax = df_ic_values.plot.bar(figsize=(8, 6), rot=0)
 
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.1), ncol=2)
 
 plt.show()
 
-# +
+
+# In[ ]:
+
+
 ax = df_ic_weights.plot.bar(figsize=(8, 6), rot=0)
 
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.1), ncol=2)
 
 plt.show()
-# -
+
 
 # # Uncertainty propagation
 
 # ## BKM model
 
-# +
+# In[ ]:
+
+
 t0 = aphid_data.Time.values.min()
 tf = aphid_data.Time.values.max()
 time_to_forecast = 250
@@ -2320,14 +2544,20 @@ with fine_model_to_forecast:
         var_names=["BKM_model"],
         random_seed=seed
     )["BKM_model"]  # Should we use likelihood_model or BKM_model?
-# -
+
+
+# In[ ]:
+
 
 mean_model_prediction = model_prediction.mean(axis=0)
 percentile_cut = 2.5
 credible_lower = np.percentile(model_prediction, q=percentile_cut, axis=0)
 credible_upper = np.percentile(model_prediction, q=100 - percentile_cut, axis=0)
 
-# +
+
+# In[ ]:
+
+
 plt.figure(figsize=(20, 2*(5)))
 
 plt.subplot(2, 1, 1)
@@ -2351,9 +2581,12 @@ plt.xlabel('Time', fontsize=15)
 plt.tight_layout()
 plt.savefig("projections.png", dpi=300)
 plt.show()
-# -
+
 
 # ## LLV model
+
+# In[ ]:
+
 
 fine_model_to_forecast_LLV = copy.deepcopy(fine_model_LLV)
 with fine_model_to_forecast_LLV:
@@ -2367,12 +2600,19 @@ with fine_model_to_forecast_LLV:
         random_seed=seed
     )["LLV_model"]  # likelihood_model or LLV_model?
 
+
+# In[ ]:
+
+
 mean_model_prediction = model_prediction.mean(axis=0)
 percentile_cut = 2.5
 credible_lower = np.percentile(model_prediction, q=percentile_cut, axis=0)
 credible_upper = np.percentile(model_prediction, q=100 - percentile_cut, axis=0)
 
-# +
+
+# In[ ]:
+
+
 plt.figure(figsize=(20, 2*(5)))
 
 plt.subplot(2, 1, 1)
@@ -2396,3 +2636,4 @@ plt.xlabel('Time', fontsize=15)
 plt.tight_layout()
 plt.savefig("projections_LLV.png", dpi=300)
 plt.show()
+
