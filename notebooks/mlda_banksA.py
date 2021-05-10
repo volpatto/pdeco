@@ -822,7 +822,7 @@ def BKM_ode_wrapper(time_exp, r1, r2, p, i, e1, e2, e3, u0, v0):
     return concatenate_simulated_qoi
 
 
-# In[ ]:
+# In[35]:
 
 
 observed_aphids = aphid_observed.Density.values.astype(np.float64)
@@ -1037,14 +1037,14 @@ duration = time.time() - start_time
 print(f"-- Monte Carlo simulations done in {duration / 60:.3f} minutes")
 
 
-# In[ ]:
+# In[36]:
 
 
 plt.hist(trace_calibration['r1'], bins=35)
 plt.show()
 
 
-# In[ ]:
+# In[37]:
 
 
 calibration_variable_names = [
@@ -1055,7 +1055,7 @@ calibration_variable_names = [
 ]
 
 
-# In[ ]:
+# In[38]:
 
 
 plot_step = 1
@@ -1071,7 +1071,7 @@ for variable in progress_bar:
     plt.savefig(f"{variable}_posterior_cal.png")
 
 
-# In[ ]:
+# In[39]:
 
 
 az.plot_pair(
@@ -1085,7 +1085,7 @@ az.plot_pair(
 plt.savefig("marginals_cal.png")
 
 
-# In[ ]:
+# In[40]:
 
 
 df_stats_summary = az.summary(
@@ -1100,7 +1100,7 @@ df_stats_summary
 
 # Auxiliary functions to compute the Most Probable Value (MPV):
 
-# In[ ]:
+# In[41]:
 
 
 from scipy.stats import gaussian_kde  # to calculate MPV from KDE
@@ -1152,7 +1152,7 @@ def add_mpv_to_summary(arviz_summary: pd.DataFrame, rv_modes_dict: dict) -> pd.D
     return new_arviz_summary
 
 
-# In[ ]:
+# In[42]:
 
 
 calibration_variable_mpv = calculate_rv_posterior_mpv(
@@ -1164,7 +1164,7 @@ df_stats_summary.to_csv("stats_summary_calibration.csv")  # salvando em um csv p
 df_stats_summary
 
 
-# In[ ]:
+# In[43]:
 
 
 percentile_cut = 2.5
@@ -1174,7 +1174,7 @@ y_max = np.percentile(trace_calibration["BKM_model"], 100 - percentile_cut, axis
 y_fit = np.percentile(trace_calibration["BKM_model"], 50, axis=0)
 
 
-# In[ ]:
+# In[44]:
 
 
 plt.figure(figsize=(15, 5))
@@ -1227,7 +1227,7 @@ plt.savefig("calibration.png", dpi=300)
 plt.show()
 
 
-# In[ ]:
+# In[45]:
 
 
 print("-- Exporting calibrated parameter to CSV")
@@ -1249,7 +1249,7 @@ duration = time.time() - start_time
 print(f"-- Exported done in {duration:.3f} seconds")
 
 
-# In[ ]:
+# In[46]:
 
 
 df_realizations
@@ -1257,7 +1257,7 @@ df_realizations
 
 # # Prey-Predator logistic Lotka-Volterra
 
-# In[ ]:
+# In[47]:
 
 
 @jit(nopython=True)
@@ -1301,7 +1301,7 @@ def LLV_ode_solver(
 
 # ## Deterministic calibration
 
-# In[ ]:
+# In[48]:
 
 
 def LLV_least_squares_error_ode(
@@ -1334,7 +1334,7 @@ def LLV_least_squares_error_ode(
     return objective_function
 
 
-# In[ ]:
+# In[49]:
 
 
 def callback_de(xk, convergence):
@@ -1376,13 +1376,13 @@ result_LLV = optimize.differential_evolution(
 print(result_LLV)
 
 
-# In[ ]:
+# In[50]:
 
 
 result_LLV.x
 
 
-# In[ ]:
+# In[51]:
 
 
 t0 = aphid_data.Time.values.min()
@@ -1419,7 +1419,7 @@ df_parameters_calibrated = pd.DataFrame.from_records([parameters_dict])
 print(df_parameters_calibrated.to_latex(index=False))
 
 
-# In[ ]:
+# In[52]:
 
 
 plt.plot(t_computed_LLV, u_LLV, '-x')
@@ -1440,7 +1440,7 @@ plt.show()
 
 # ### SA on Least-Squares objective function
 
-# In[ ]:
+# In[53]:
 
 
 mean_values_params = [
@@ -1469,7 +1469,7 @@ num_of_trajectories = 20
 parameter_values = ee_sample(problem_info, grid_level, num_of_trajectories, local_optimization=False, seed=seed)
 
 
-# In[ ]:
+# In[54]:
 
 
 num_of_realizations = parameter_values.shape[0]
@@ -1488,7 +1488,7 @@ for realization_index, parameters_realization in tqdm(enumerate(parameter_values
     qoi_sensitivity_outputs[realization_index] = residual_least_squares_result
 
 
-# In[ ]:
+# In[55]:
 
 
 data_time = aphid_data.Time.values
@@ -1507,7 +1507,7 @@ df_Si.sort_values(by=r'$\mu^*$', ascending=False, inplace=True)
 df_Si
 
 
-# In[ ]:
+# In[56]:
 
 
 df_Si.T.plot.bar(rot=0, width=3, figsize=(9, 6))
@@ -1525,7 +1525,7 @@ plt.show()
 
 # ### SA on pest population
 
-# In[ ]:
+# In[57]:
 
 
 t0 = aphid_data.Time.values.min()
@@ -1551,7 +1551,7 @@ for realization_index, parameters_realization in tqdm(enumerate(parameter_values
     qoi_sensitivity_outputs[realization_index, :] = u_realization
 
 
-# In[ ]:
+# In[58]:
 
 
 df_Si = pd.DataFrame(columns=['Time', *problem_info['names']])
@@ -1589,13 +1589,13 @@ valid_times = df_Si.Time.values
 df_Si
 
 
-# In[ ]:
+# In[59]:
 
 
 df_sigmai
 
 
-# In[ ]:
+# In[60]:
 
 
 fig = plt.figure()
@@ -1614,7 +1614,7 @@ plt.savefig("SA_pest_pop_LLV.png", dpi=300)
 plt.show()
 
 
-# In[ ]:
+# In[61]:
 
 
 fig = plt.figure()
@@ -1635,7 +1635,7 @@ plt.show()
 
 # ### SA on time-derivative pest population
 
-# In[ ]:
+# In[62]:
 
 
 pest_time_derivative_array = calculate_pest_time_derivative_series(
@@ -1649,7 +1649,7 @@ pest_time_derivative_array = calculate_pest_time_derivative_series(
 pest_time_derivative_array
 
 
-# In[ ]:
+# In[63]:
 
 
 plt.figure(figsize=(9, 7))
@@ -1667,7 +1667,7 @@ plt.savefig("pest_derivative_LLV.png", dpi=300)
 plt.show()
 
 
-# In[ ]:
+# In[64]:
 
 
 for realization_index, parameters_realization in tqdm(enumerate(parameter_values), total=len(parameter_values)):
@@ -1692,7 +1692,7 @@ for realization_index, parameters_realization in tqdm(enumerate(parameter_values
     qoi_sensitivity_outputs[realization_index, :] = pest_time_derivative_array
 
 
-# In[ ]:
+# In[65]:
 
 
 df_Si = pd.DataFrame(columns=['Time', *problem_info['names']])
@@ -1730,13 +1730,13 @@ valid_times = df_Si.Time.values
 df_Si
 
 
-# In[ ]:
+# In[66]:
 
 
 df_sigmai
 
 
-# In[ ]:
+# In[67]:
 
 
 fig = plt.figure()
@@ -1755,7 +1755,7 @@ plt.savefig("SA_pest_pop_derivative_LLV.png", dpi=300)
 plt.show()
 
 
-# In[ ]:
+# In[68]:
 
 
 fig = plt.figure()
@@ -1776,7 +1776,7 @@ plt.show()
 
 # ## Bayesian calibration
 
-# In[ ]:
+# In[69]:
 
 
 @theano.compile.ops.as_op(
@@ -1814,7 +1814,7 @@ def LLV_ode_wrapper(time_exp, r, K, a, ef, m, u0, v0):
     return concatenate_simulated_qoi
 
 
-# In[ ]:
+# In[70]:
 
 
 observed_aphids_fine = aphid_observed.Density.values.astype(np.float64)
@@ -1943,7 +1943,7 @@ duration = time.time() - start_time
 print(f"-- Monte Carlo simulations done in {duration / 60:.3f} minutes")
 
 
-# In[ ]:
+# In[71]:
 
 
 calibration_variable_names = [
@@ -1954,7 +1954,7 @@ calibration_variable_names = [
 ]
 
 
-# In[ ]:
+# In[72]:
 
 
 plot_step = 1
@@ -1970,7 +1970,7 @@ for variable in progress_bar:
     plt.savefig(f"{variable}_posterior_cal_LLV.png")
 
 
-# In[ ]:
+# In[73]:
 
 
 az.plot_pair(
@@ -1984,7 +1984,7 @@ az.plot_pair(
 plt.savefig("marginals_cal_LLV.png")
 
 
-# In[ ]:
+# In[74]:
 
 
 df_stats_summary = az.summary(
@@ -1997,7 +1997,7 @@ df_stats_summary = az.summary(
 df_stats_summary
 
 
-# In[ ]:
+# In[75]:
 
 
 calibration_variable_mpv = calculate_rv_posterior_mpv(
@@ -2009,7 +2009,7 @@ df_stats_summary.to_csv("stats_summary_calibration_LLV.csv")  # salvando em um c
 df_stats_summary
 
 
-# In[ ]:
+# In[76]:
 
 
 percentile_cut = 2.5
@@ -2019,7 +2019,7 @@ y_max = np.percentile(trace_calibration_LLV["LLV_model"], 100 - percentile_cut, 
 y_fit = np.percentile(trace_calibration_LLV["LLV_model"], 50, axis=0)
 
 
-# In[ ]:
+# In[77]:
 
 
 plt.figure(figsize=(15, 5))
@@ -2072,7 +2072,7 @@ plt.savefig("calibration_LLV.png", dpi=300)
 plt.show()
 
 
-# In[ ]:
+# In[78]:
 
 
 print("-- Exporting calibrated parameter to CSV")
@@ -2094,7 +2094,7 @@ duration = time.time() - start_time
 print(f"-- Exported done in {duration:.3f} seconds")
 
 
-# In[ ]:
+# In[79]:
 
 
 df_realizations
@@ -2108,7 +2108,7 @@ df_realizations
 # 
 # TL;DR: The "score", which is "loo" or "waic" in the printed dataframe bellow, should the greatest for the best model. The `weight` is one of the most important information, because it loosely tell the probability of the model to be the "correct one" among all the compared models.
 
-# In[ ]:
+# In[80]:
 
 
 print("\n*** Performing model comparison ***")
@@ -2135,7 +2135,7 @@ print(f"-- Model comparison done in {duration / 60:.3f} minutes")
 df_model_comparison
 
 
-# In[ ]:
+# In[81]:
 
 
 az.plot_compare(df_model_comparison, figsize=(12, 4), insample_dev=False)
@@ -2162,7 +2162,7 @@ plt.show()
 # 
 # This auxiliary quantity is known as "relative likelihood". It is proportional to the probability that the $i$th model minimizes the information loss. For the best model, this value will be always equal to 1.
 
-# In[ ]:
+# In[82]:
 
 
 def calculate_aic_score(trace, rv_model_name, num_of_parameters, observations):
@@ -2236,14 +2236,14 @@ def calculate_bic_score(trace, rv_model_name, num_of_parameters, observations):
     return bic_scores
 
 
-# In[ ]:
+# In[83]:
 
 
 aic_scores = calculate_aic_score(trace_calibration, 'BKM_model', 5, observations_to_fit)
 aic_mpv = _scalar_rv_mvp_estimation(aic_scores)
 
 
-# In[ ]:
+# In[84]:
 
 
 plt.hist(aic_scores, bins=30)
@@ -2254,14 +2254,14 @@ plt.ylabel("Frequency")
 plt.show()
 
 
-# In[ ]:
+# In[85]:
 
 
 aicc_scores = calculate_aicc_score(trace_calibration, 'BKM_model', 5, observations_to_fit)
 aicc_mpv = _scalar_rv_mvp_estimation(aicc_scores)
 
 
-# In[ ]:
+# In[86]:
 
 
 plt.hist(aicc_scores, bins=30)
@@ -2272,14 +2272,14 @@ plt.ylabel("Frequency")
 plt.show()
 
 
-# In[ ]:
+# In[87]:
 
 
 bic_scores = calculate_bic_score(trace_calibration, 'BKM_model', 5, observations_to_fit)
 bic_mpv = _scalar_rv_mvp_estimation(bic_scores)
 
 
-# In[ ]:
+# In[88]:
 
 
 plt.hist(bic_scores, bins=30)
@@ -2292,7 +2292,7 @@ plt.show()
 
 # Now we define convenient functions to compare models according to the ICs.
 
-# In[ ]:
+# In[89]:
 
 
 def compare_aic(
@@ -2445,7 +2445,7 @@ def compare_ic(
     return df_compare_results
 
 
-# In[ ]:
+# In[90]:
 
 
 models_to_compare = {
@@ -2470,7 +2470,7 @@ df_compare_aic = compare_aic(
 df_compare_aic
 
 
-# In[ ]:
+# In[91]:
 
 
 df_compare_bic = compare_bic(
@@ -2482,7 +2482,7 @@ df_compare_bic = compare_bic(
 df_compare_bic
 
 
-# In[ ]:
+# In[92]:
 
 
 df_compare_ic = compare_ic(
@@ -2494,14 +2494,14 @@ df_compare_ic = compare_ic(
 df_compare_ic
 
 
-# In[ ]:
+# In[93]:
 
 
 df_ic_values = df_compare_ic[['AIC', 'AICc', 'BIC']].T
 df_ic_weights = df_compare_ic[['weight_AIC', 'weight_AICc', 'weight_BIC']].T
 
 
-# In[ ]:
+# In[94]:
 
 
 ax = df_ic_values.plot.bar(figsize=(8, 6), rot=0)
@@ -2511,7 +2511,7 @@ ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.1), ncol=2)
 plt.show()
 
 
-# In[ ]:
+# In[95]:
 
 
 ax = df_ic_weights.plot.bar(figsize=(8, 6), rot=0)
@@ -2525,7 +2525,7 @@ plt.show()
 
 # ## BKM model
 
-# In[ ]:
+# In[96]:
 
 
 t0 = aphid_data.Time.values.min()
@@ -2546,7 +2546,7 @@ with fine_model_to_forecast:
     )["BKM_model"]  # Should we use likelihood_model or BKM_model?
 
 
-# In[ ]:
+# In[97]:
 
 
 mean_model_prediction = model_prediction.mean(axis=0)
@@ -2555,7 +2555,7 @@ credible_lower = np.percentile(model_prediction, q=percentile_cut, axis=0)
 credible_upper = np.percentile(model_prediction, q=100 - percentile_cut, axis=0)
 
 
-# In[ ]:
+# In[98]:
 
 
 plt.figure(figsize=(20, 2*(5)))
@@ -2585,7 +2585,7 @@ plt.show()
 
 # ## LLV model
 
-# In[ ]:
+# In[99]:
 
 
 fine_model_to_forecast_LLV = copy.deepcopy(fine_model_LLV)
@@ -2601,7 +2601,7 @@ with fine_model_to_forecast_LLV:
     )["LLV_model"]  # likelihood_model or LLV_model?
 
 
-# In[ ]:
+# In[100]:
 
 
 mean_model_prediction = model_prediction.mean(axis=0)
@@ -2610,7 +2610,7 @@ credible_lower = np.percentile(model_prediction, q=percentile_cut, axis=0)
 credible_upper = np.percentile(model_prediction, q=100 - percentile_cut, axis=0)
 
 
-# In[ ]:
+# In[101]:
 
 
 plt.figure(figsize=(20, 2*(5)))
