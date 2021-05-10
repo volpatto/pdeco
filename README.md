@@ -1,4 +1,4 @@
-# PDECO: Study of population dynamics with PDEs for Ecology problems
+# PDECO: Study of population dynamics with ODEs for Ecology problems
 
 **READ HERE: This is an early stage research and it should not be considered for reproduction, replication and to draw conclusions.**
 
@@ -6,12 +6,11 @@ Try it out in your browser: [![Binder](https://mybinder.org/badge_logo.svg)](htt
 
 ## What is it?
 
-This repo constains studies of population dynamics considering both functional responses as well as diffusion effects for Prey-Predator system composed
-by Aphids and Ladybird Beetles. [This paper by Banks et al.](https://www.jstor.org/stable/pdf/4218480.pdf?casa_token=UEJ4ZNlRCG4AAAAA:asdZBtFD9_oVwOfAIYHeS-XSQA4wS-M3f2WJ_sl0xvYWzuq284GyfXVRsXfbMSowKlIgDsJbMBG2lQgh2fUefqirJmlltq3Q61FbOLg6jrcH2pQTWaEn) is our main reference.
+This repo constains studies of population dynamics considering both functional responses as well as diffusion effects for Prey-Predator system composed of Aphids and Ladybeetles. [This paper by Banks et al.](https://dx.doi.org/10.1007/BF00378930) [and Lin and Pennings](https://dx.doi.org/10.1002/ece3.4117) are our main references.
 
 ## How is the mathematical model?
 
-To model the Predator-Prey behavior, we consider a system of partial differential equations (PDEs) based on Lotka-Volterra and others functional response
+To model the Predator-Prey behavior, we consider a system of ordinary differential equations (ODEs) based on Lotka-Volterra and others functional response
 on the go. This setup can be easily configured in our `jupyter notebook`s provided in this repo.
 
 ## How the models are implemented?
