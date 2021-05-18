@@ -1,0 +1,9 @@
+Location,Time,Date,Location_code,Patch_ID,Uroleucon,Cycloneda_sanguinea
+none,none,dd-mmm-yyyy,none,none,count,count
+nominal,series,datetime,code,nominal,data,data
+dike,1,29-May-13,1,1,1293,1
+dike,4,1-Jun-13,1,1,834,3
+dike,7,4-Jun-13,1,1,634,5
+dike,10,7-Jun-13,1,1,426,4
+dike,13,10-Jun-13,1,1,673,3
+dike,16,13-Jun-13,1,1,632,2

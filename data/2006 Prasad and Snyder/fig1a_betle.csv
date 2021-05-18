@@ -1,6 +1,0 @@
-Location,Time,Date,Location_code,Patch_ID,Activity-density
-none,none,dd-mmm-yyyy,none,none,count
-nominal,series,datetime,code,nominal,data
-N/A,5,May,N/A,N/A,64.0873015873016
-N/A,8,Aug,N/A,N/A,33.7301587301587
-N/A,9,Sept,N/A,N/A,31.7460317460318
