@@ -1,9 +1,0 @@
-Location,Time,Date,Location_code,Patch_ID,Uroleucon,Cycloneda_sanguinea
-none,none,dd-mmm-yyyy,none,none,count,count
-nominal,series,datetime,code,nominal,data,data
-lighthouse,1,30-May-13,3,1,51,1
-lighthouse,4,2-Jun-13,3,1,38,0
-lighthouse,7,5-Jun-13,3,1,27,0
-lighthouse,10,8-Jun-13,3,1,32,0
-lighthouse,13,11-Jun-13,3,1,37,0
-lighthouse,16,14-Jun-13,3,1,64,0
