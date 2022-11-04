@@ -31,3 +31,4 @@ MIT license. Check LICENSE for further details. Spoiler: you can use it at will,
 
 * Diego Volpatto: dtvolpatto@gmail.com
 * Lucas Dos Anjos: lucas.ecol@gmail.com
+* Gustavo Naozuka: gtnaozuka@gmail.com
