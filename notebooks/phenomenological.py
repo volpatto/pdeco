@@ -880,6 +880,28 @@ for variable in progress_bar:
         point_estimate="mode"
     )
     plt.savefig(f"img/posterior_cal_M01_{variable}.png", bbox_inches='tight', pad_inches=0)
+
+# +
+calibration_variable_names = [
+    "std_deviation",
+    "r1",
+    "a1",
+    "m",
+]
+
+plot_step = 1
+progress_bar = tqdm(calibration_variable_names)
+for variable in progress_bar:
+    pm.plot_posterior(
+        trace_calibration_M01[::plot_step], 
+        var_names=(f"{variable}"), 
+        kind="kde",
+        bins=35,
+        round_to=None,
+        textsize=18,
+        point_estimate="mode"
+    )
+#    plt.savefig(f"img/posterior_cal_M01_KDE_{variable}.png", bbox_inches='tight', pad_inches=0)
 # -
 
 az.plot_pair(
@@ -1672,12 +1694,12 @@ print(f"-- Monte Carlo simulations done in {duration / 60:.3f} minutes")
 # -
 
 
-plt.hist(trace_calibration_M02['r1'], bins=35)
-plt.show()
-plt.hist(trace_calibration_M02['m'], bins=35)
-plt.show()
-plt.hist(trace_calibration_M02['a1'], bins=35)
-plt.show()
+# plt.hist(trace_calibration_M02['r1'], bins=35)
+# plt.show()
+# plt.hist(trace_calibration_M02['m'], bins=35)
+# plt.show()
+# plt.hist(trace_calibration_M02['a1'], bins=35)
+# plt.show()
 
 # +
 calibration_variable_names = [
@@ -1700,6 +1722,28 @@ for variable in progress_bar:
         point_estimate="mode"
     )
     plt.savefig(f"img/posterior_cal_M02_{variable}.png", bbox_inches='tight', pad_inches=0)
+
+# +
+calibration_variable_names = [
+    "std_deviation",
+    "r1",
+    "m",
+    "a1",
+]
+
+plot_step = 1
+progress_bar = tqdm(calibration_variable_names)
+for variable in progress_bar:
+    pm.plot_posterior(
+        trace_calibration_M02[::plot_step], 
+        var_names=(f"{variable}"), 
+        kind="kde",
+        bins=35,
+        round_to=None,
+        textsize=18,
+        point_estimate="mode"
+    )
+#    plt.savefig(f"img/posterior_cal_M02_KDE_{variable}.png", bbox_inches='tight', pad_inches=0)
 # -
 
 az.plot_pair(
@@ -2494,12 +2538,12 @@ print(f"-- Monte Carlo simulations done in {duration / 60:.3f} minutes")
 # -
 
 
-plt.hist(trace_calibration_M03['m'], bins=35)
-plt.show()
-plt.hist(trace_calibration_M03['a1'], bins=35)
-plt.show()
-plt.hist(trace_calibration_M03['a2'], bins=35)
-plt.show()
+# plt.hist(trace_calibration_M03['m'], bins=35)
+# plt.show()
+# plt.hist(trace_calibration_M03['a1'], bins=35)
+# plt.show()
+# plt.hist(trace_calibration_M03['a2'], bins=35)
+# plt.show()
 
 # +
 calibration_variable_names = [
@@ -2526,6 +2570,32 @@ for variable in progress_bar:
         point_estimate="mode"
     )
     plt.savefig(f"img/posterior_cal_M03_{variable}.png", bbox_inches='tight', pad_inches=0)
+
+# +
+calibration_variable_names = [
+    "std_deviation",
+    "m",
+    "a1",
+    "a2",
+]
+
+plot_step = 1
+progress_bar = tqdm(calibration_variable_names)
+for variable in progress_bar:
+    if calibration_variable_names==a1:
+        ax = plt.gca()
+        x = np.arange(0.00026, 0.00033, 0.00005, dtype = float)
+        ax.set_xticks(x, minor=True)
+    pm.plot_posterior(
+        trace_calibration_M03[::plot_step], 
+        var_names=(f"{variable}"), 
+        kind="kde",
+        bins=35,
+        round_to=None,
+        textsize=18,
+        point_estimate="mode"
+    )
+#    plt.savefig(f"img/posterior_cal_M03_KDE_{variable}.png", bbox_inches='tight', pad_inches=0)
 # -
 
 az.plot_pair(
