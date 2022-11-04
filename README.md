@@ -17,8 +17,7 @@ on the go. This setup can be easily configured in our `jupyter notebook`s provid
 
 ## How the models are implemented?
 
-We have been using [py-pde](https://github.com/zwicker-group/py-pde), an amazing Python package to solve systems of PDE out-of-the-box. To analyze results,
-we use `pandas` and `matplotlib`. Soon model calibration will be implemented, considering both deterministic and bayesian approach.
+We have applied Bayesian calibration for the model's parameters.
 
 To document results and for the sake of reproducibility, we use `jupyter notebook`s. We provide a `requirements.txt` file for the case you want to have the same
 development environment we have (for instance, you can create an environment with [venv](https://docs.python.org/3/tutorial/venv.html)). We use `Python >= 3.6`.
