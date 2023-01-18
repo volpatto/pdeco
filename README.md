@@ -30,7 +30,8 @@ This code contains the routines for the three employed phenomenological models. 
 - ModelSelection.ipynb
 This code performs the model selection after getting the results from the two previous codes. Each model has Maximum a Posteriori (MAP) estimates for the calibrated parameters. We manually insert the values in the model, for example for model (1):
 
-dRdt = [ r1 * R - a1 * R * C / ( 1 + a2 * R ),
+R, C = N
+dNdt = [ r1 * R - a1 * R * C / ( 1 + a2 * R ),
  ef * R - m * C * C ]
  
 it becomes:
