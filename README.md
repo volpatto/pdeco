@@ -19,7 +19,7 @@ development environment we have (for instance, you can create an environment wit
 
 ## How to use (and modify) the code?
 
-Open the "notebooks" directory. You will find three codes .ipynb:
+Open the "notebooks" folder. You will find three codes .ipynb:
 
 - phenomenological.ipynb
 This code contains the routines for the three employed phenomenological models. The routine includes (i) loading the data, (ii) data regularisation, (iii) sensitivity analysis, and (iv) Bayesian calibration.
