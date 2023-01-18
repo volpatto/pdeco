@@ -34,14 +34,18 @@ This code contains the routines for the three employed phenomenological models. 
 
 - ModelSelection.ipynb
 This code performs the model selection after getting the results from the two previous codes. Each model has Maximum a Posteriori (MAP) estimates for the calibrated parameters. We manually insert the values in the model, for example for model (1):
-dRdt = [ r1 * R - a1 * R * C / ( 1 + a2 * R ),
-	ef * R - m * C * C ]
-it becomes:
-dRdt = [ 0.318752 * R - 0.080779 * R * C / ( 1 + 0.0001948159776916025 * R ),
-	0.0002897334690674872 * R - 0.012509 * C * C ]
-After filling in for all models, 
 
-To test another mathematical model the user should directly change the definition of an existing model, that is indicated by the prefix "def" (which is a function of Python). All the parameters should also be modified througour the code to be consistent with the new model to be added.
+dRdt = [ r1 * R - a1 * R * C / ( 1 + a2 * R ),
+ ef * R - m * C * C ]
+ 
+it becomes:
+
+dRdt = [ 0.318752 * R - 0.080779 * R * C / ( 1 + 0.0001948159776916025 * R ),
+ 0.0002897334690674872 * R - 0.012509 * C * C ]
+ 
+After filling in all models, the user can run the code and will get a ranking from worst to best.
+
+To test another mathematical model the user should directly change the definition of an existing model, which is indicated by the prefix "def" (this is a function of Python). All the parameters should also be modified throughout the code to be consistent with the new model to be added.
 
 ## License
 
