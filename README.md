@@ -24,7 +24,7 @@ Open the "notebooks" folder. You will find seven codes .ipynb:
 - model1.ipynb to model3.ipynb
 These codes contain the routines for the three employed phenomenological models (model 1, 2, and 3). The routine includes (i) loading the data, (ii) data regularisation, (iii) sensitivity analysis, and (iv) Bayesian calibration.
 
-- model4.ipynb to model5.ipynb
+- model4.ipynb to model6.ipynb
 These codes contain the routines for the three data-driven models (model 4, 5, and 6). The routine includes (i) loading the data, (ii) data regularisation, (iii) sensitivity analysis, and (iv) Bayesian calibration.
 
 - ModelSelection.ipynb
