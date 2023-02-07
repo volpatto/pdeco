@@ -49,7 +49,9 @@ To test another mathematical model not listed, the user should directly change t
 Open a terminal and type:
 
 make clean
+
 make
+
 make run_output
 
 ## License
