@@ -44,6 +44,14 @@ After filling in all models, the user can run the code and will get a ranking fr
 
 To test another mathematical model not listed, the user should directly change the definition of an existing model, which is indicated by the prefix "def" (this is a function of Python). All the parameters should also be modified throughout the code to be consistent with the new model to be added.
 
+### How to run the data-driven model identification codes?
+
+Open a terminal and type:
+
+make clean
+make
+make run_output
+
 ## License
 
 MIT license. Check LICENSE for further details. Spoiler: you can use it at will, as well as distribute, modify and etc. But without any warranty, at your own risk.
