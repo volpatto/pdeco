@@ -58,6 +58,9 @@ make run_output
 
 MIT license. Check LICENSE for further details. Spoiler: you can use it at will, as well as distribute, modify and etc. But without any warranty, at your own risk.
 
+## Necessary packages
+For the utilized packages, see the file [requirements]{https://github.com/Tungdil01/pdeco/blob/main/notebooks/requirements.txt}.
+
 ## Authors
 
 * Diego Volpatto: dtvolpatto@gmail.com
