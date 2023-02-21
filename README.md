@@ -17,6 +17,9 @@ We have applied Bayesian calibration for the model's parameters.
 To document results and for the sake of reproducibility, we use `jupyter notebook`s. We provide a `requirements.txt` file in case you want to have the same
 development environment we have (for instance, you can create an environment with [venv](https://docs.python.org/3/tutorial/venv.html)). We use `Python >= 3.6`.
 
+## Required packages
+For the utilized packages, see the [requirements](https://github.com/Tungdil01/pdeco/blob/main/notebooks/requirements.txt).
+
 ## How to use (and modify) the code?
 
 Open the "notebooks" folder. You will find seven codes .ipynb:
@@ -57,9 +60,6 @@ make run_output
 ## License
 
 MIT license. Check LICENSE for further details. Spoiler: you can use it at will, as well as distribute, modify and etc. But without any warranty, at your own risk.
-
-## Necessary packages
-For the utilized packages, see the [requirements](https://github.com/Tungdil01/pdeco/blob/main/notebooks/requirements.txt).
 
 ## Authors
 
