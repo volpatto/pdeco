@@ -51,11 +51,24 @@ To test another mathematical model not listed, the user should directly change t
 
 Open a terminal and type:
 
-make clean
+1. Open the _data_driven_model_identification_ folder. You will find two subfolders whose scripts are used to discover models 4, 5, and 6. The identification of models 4 and 6 uses the same scripts but different GPR (Gaussian Process Regression) kernels for the data regularisation.
 
-make
+ 2. Enter the directory of the model you would like to run.
 
-make run_output
+ 3. Clean the project's _output_ folder:
+	 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`$ make clean`
+
+ 4. Run the project by writing the output logs to the terminal:
+	
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`$ make`
+	
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**OR**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Run the project by writing the output logs to the _models.dat_ file:
+	 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`$ make run_output`
+
+ 5. Enter the project's _output_ folder and check out the results.
 
 ## License
 
