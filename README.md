@@ -22,7 +22,7 @@ For the utilized packages, see the [requirements](https://github.com/Tungdil01/p
 
 ## How to use (and modify) the code?
 
-Open the "notebooks" folder. You will find seven codes .ipynb:
+Open the _notebooks_ folder. You will find seven codes .ipynb:
 
 - model1.ipynb to model3.ipynb
 These codes contain the routines for the three employed phenomenological models (model 1, 2, and 3). The routine includes (i) loading the data, (ii) data regularisation, (iii) sensitivity analysis, and (iv) Bayesian calibration.
