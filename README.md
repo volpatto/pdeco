@@ -33,15 +33,19 @@ These codes contain the routines for the three data-driven models (model 4, 5, a
 - ModelSelection.ipynb
 This code performs the model selection after getting the results from the two previous codes. Each model has Maximum a Posteriori (MAP) estimates for the calibrated parameters. We manually insert the values in the model, for example for model (1):
 
+```python
 R, C = N
 
 dNdt = [ r1 * R - a1 * R * C / ( 1 + a2 * R ),
  ef * R - m * C * C ]
- 
+```
+
 it becomes:
 
+```python
 dNdt = [ 0.318752 * R - 0.080779 * R * C / ( 1 + 0.0001948159776916025 * R ),
  0.0002897334690674872 * R - 0.012509 * C * C ]
+```
  
 After filling in all models, the user can run the code and will get a ranking from worst to best.
 
