@@ -1,0 +1,23 @@
+# Requirements to run the code
+numpy==1.22.1
+scipy==1.7.3
+pandas==1.4.3
+tqdm==4.64.0
+SALib==1.4.5
+pymc3==3.11.5
+numba==0.56.0
+
+# Excel IO with pandas
+xlrd==2.0.1
+openpyxl==3.0.10
+
+# Jupyter Notebooks
+jupyter==1.0.0
+notebook==6.4.12
+jupytext==1.14.1
+
+# Plotting
+matplotlib==3.5.3
+
+# Data regularization
+scikit-learn==1.1.2
