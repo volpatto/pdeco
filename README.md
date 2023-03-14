@@ -1,5 +1,7 @@
 # PDECO: Study of population dynamics with ODEs for Ecology problems
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7731328.svg)](https://doi.org/10.5281/zenodo.7731328)
+
 Try it out in your browser: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Tungdil01/pdeco/HEAD)
 
 ## What is it?
